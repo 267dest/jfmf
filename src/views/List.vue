@@ -3,7 +3,7 @@ d<template>
     <h1>{{ title }}</h1>
 <p>Catalog.</p>
    <br><br>
-   <button><router-link to="/list">Go</router-link></button>
+   <button><router-link to="/login">Go</router-link></button>
   </div>
 </template>
 
