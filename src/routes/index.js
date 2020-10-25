@@ -4,7 +4,6 @@ import Login from '../views/Login.vue';
 import List from '../views/List.vue';
 import InvenLog from '../views/InvenLog.vue';
 import MemberManage from '../views/MemberManage.vue';
-import foo from '../views/foo.vue';
 
 
 const routes = [
@@ -26,12 +25,7 @@ const routes = [
     path: '/member',
     name: 'MemberManagement',
     component: MemberManage
-  },{
-    path: '/foo',
-    name: 'foo',
-    component: foo
   }
-
 ]
 
 export default new VueRouter({

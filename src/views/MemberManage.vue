@@ -1,13 +1,17 @@
 <template>
+<!-- This is template for inserting navBar to files -->
   <div>
-    <h1>{{ title }}</h1>
-<p>Manage member</p>
-   <br><br>
-   <button><router-link to="/list">Login</router-link></button>
+    <!-- Use NavBar -->
+    <nav-bar></nav-bar>
+
+    <h1> {{ title }} </h1>
   </div>
+
 </template>
 
 <script>
+//Import Navbar
+import NavBar from '../components/NavBar.vue'
 export default {
   data() {
     return {
@@ -17,6 +21,7 @@ export default {
   methods: {
   },
   components: {
+    NavBar
   }
 };
 </script>

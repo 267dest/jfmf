@@ -1,13 +1,14 @@
 d<template>
   <div>
+      <nav-bar />
     <h1>{{ title }}</h1>
 <p>Catalog.</p>
-   <br><br>
-   <button><router-link to="/login">Go</router-link></button>
   </div>
 </template>
 
 <script>
+//Import Navbar
+import NavBar from '../components/NavBar.vue'
 export default {
   data() {
     return {
@@ -17,6 +18,7 @@ export default {
   methods: {
   },
   components: {
+      NavBar
   }
 };
 </script>

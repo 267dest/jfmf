@@ -29,12 +29,7 @@
          <li class="nav-item active">
             <a class="nav-link" href="/member"
               >Member</a
-            >
-            <li class="nav-item active">
-            <a class="nav-link" href="/foo"
-              >foo</a
-            >
-          </li>
+            ></li>
           </ul><ul class="navbar-nav ml-auto">
           <li class="nav-item active">
             <a class="nav-link" href="/"
