@@ -15,7 +15,7 @@ import NavBar from '../components/NavBar.vue'
 export default {
   data() {
     return {
-      title: 'Member management'
+      title: 'Member Management'
     }
   },
   methods: {
