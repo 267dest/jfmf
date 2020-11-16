@@ -1,7 +1,11 @@
 <template>
 
   <div id="app">
-    <router-view v-show="this.$route.name == 'Login' || user"></router-view>
+    <!-- Use this on real product version of web app
+      <router-view v-show="this.$route.name == 'Login' || user"></router-view>
+     instead of the one below -->
+    <router-view></router-view>
+     
   </div>
 </template>
 
