@@ -1,24 +1,57 @@
 <template>
-  <div>
-    <h1>{{ title }}</h1>
-<p>Please login to continue.</p>
-   <br><br>
-   <button><router-link to="/list">Login</router-link></button>
-  </div>
+        <div class="partition-form" style="padding-top: 0px">
+          <form @submit.prevent="handleSubmit()" autocomplete="false">
+            <div class="autocomplete-fix">
+              <input disabled type="password">
+            </div>
+            <input id="username" type="text" placeholder="Staff Email Address *" v-model="form.email">
+            <input id="password" type="password" placeholder="Password *" v-model="form.password">
+          <div class="button-set">
+            <button id="Login">Login</button>
+          </div>
+          </form>
+        </div>
 </template>
 
 <script>
+import {mapState, mapActions} from 'vuex'
 export default {
   data() {
     return {
-      title: 'Login'
+      form: {
+        email: '',
+        password: ''
+      }
     }
   },
-  methods: {
+  components:{
+    mapState,
+    mapActions,
   },
-  components: {
-  }
-};
+  computed: {
+    ...mapState({
+      alert: state => state.alert
+    }),
+    ...mapState('account', ['user']),
+  },
+  methods: {    
+    ...mapActions('account', ['login']),
+    ...mapActions('alert', ['error']),
+    handleSubmit(e){
+      if(this.form.email && this.form.password){
+        this.login(this.form).then( this.$router.push('/list'))
+      }
+      else{
+          this.error("All fields are required");
+      }
+      this.form ={
+        email: '',
+        password: ''
+      }
+    }
+    
+      }
+    }
 </script>
 
 <style>

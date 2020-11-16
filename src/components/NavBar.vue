@@ -30,11 +30,10 @@
             <a class="nav-link" href="/member"
               >Member</a
             ></li>
-          </ul><ul class="navbar-nav ml-auto">
+          </ul>
+          <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="/"
-              >Log Out</a
-            >
+            <button class="nav-link" @click="this.logout()">Log Out</button>
           </li>
         </ul>
       </div>
@@ -43,8 +42,12 @@
 </template>
 
 <script>
+import {mapState, mapActions} from 'vuex'
 export default {
-  name: "NavBar"
+  name: "NavBar",
+  methods: {
+        ...mapActions('account',['logout']),
+    }
 };
 </script>
 
