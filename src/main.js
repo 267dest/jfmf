@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import App from './App.vue'
-import router from './routes'
 import VueRouter from 'vue-router'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import VueMoment from 'vue-moment'
 import { auth } from './firebase.js'
+import { router } from './routes'
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { firestorePlugin } from 'vuefire'

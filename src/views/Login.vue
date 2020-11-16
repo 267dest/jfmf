@@ -39,7 +39,7 @@ export default {
     ...mapActions('alert', ['error']),
     handleSubmit(e){
       if(this.form.email && this.form.password){
-        this.login(this.form).then( this.$router.push('/list'))
+        this.login(this.form)
       }
       else{
           this.error("All fields are required");

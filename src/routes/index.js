@@ -16,29 +16,22 @@ const routes = [
       path: '/list',
       name: 'List',
       component: List,
-      meta: {
-        requiresAuth: true
-      }
-  },{
+        },{
     path: '/invenlog',
     name: 'InventoryLog',
     component: InvenLog,
-    meta: {
-      requiresAuth: true
-    }
+    
   },
   {
     path: '/member',
     name: 'MemberManagement',
     component: MemberManage,
-    meta: {
-      requiresAuth: true
-    }
+    
   },
 ]
 
 
-export default new VueRouter({
+export const router = new VueRouter({
     mode: 'history',
     routes
 })

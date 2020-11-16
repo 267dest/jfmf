@@ -33,7 +33,7 @@
           </ul>
           <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
-            <button class="nav-link" @click="this.logout()">Log Out</button>
+            <button class="nav-link" @click="logout()">Log Out</button>
           </li>
         </ul>
       </div>

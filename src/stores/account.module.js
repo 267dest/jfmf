@@ -68,7 +68,8 @@ const actions = {
 
       logout({ commit }){
             userService.logout()
-            commit('logout').then(this.$router.push('/'))
+            commit('logout')
+            router.push('/')
       }
 }
 
