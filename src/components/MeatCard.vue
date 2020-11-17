@@ -4,23 +4,45 @@
       <img src="../assets/wagyuBeef.png" class="meat-img" contain />
     </div>
     <div id="font-style1">
-      <span>{{ meatDetail.meatName }}</span>
+      <span>{{ p_name }}</span>
     </div>
     <div id="font-style2">
-      <span>{{ meatDetail.meatDescription }}</span>
+      <span>{{ p_desc }}</span>
     </div>
     <div id="font-style2">
-      <span>Quantity: {{ meatDetail.meatQuantity }}</span>
+      <span>Quantity: {{ p_qty }}</span>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ["meatDetail"],
+  props: { 
+    product_id: {
+      type: Number, 
+      default: 0
+    },
+    product_name: {
+      type: String,
+      default: "Null"
+    },
+    product_desc: {
+      type: String,
+      default: "Null"
+    },
+    product_qty: {
+      type: Number,
+      default: 0
+    },
+  },
 
   data() {
-    return {};
+    return { 
+      p_id: this.product_id,
+      p_name: this.product_name,
+      p_desc: this.product_desc,
+      p_qty: this.product_qty
+    };
   },
 };
 </script>

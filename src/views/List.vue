@@ -26,10 +26,13 @@
             align="center"
             class="border border-dark"
             id="meat-detail-card"
-            v-for="meatDetail in meatList"
-            :key="meatDetail"
+            v-for="product in products"
+            :key="product.p_id"
           >
-            <MeatCard v-bind:meatDetail="meatDetail" />
+            <p>{{product.p_id}}</p>
+            <!-- <MeatCard v-bind:product="product" /> -->
+            <Meat-card :product_id="product.p_id" :product_name="product.p_name" 
+            :product_desc="product.p_description" :product_qty="product.qty" />
             <br />
           </b-col>
         </b-row>
@@ -41,10 +44,10 @@
             align="center"
             class="border border-dark"
             id="meat-detail-card"
-            v-for="meatDetail in meatList"
-            :key="meatDetail"
+            v-for="product in products"
+            :key="product.p_id"
           >
-            <MeatCard v-bind:meatDetail="meatDetail" />
+            <MeatCard v-bind:product="product" />
             <b-button id="sell-btn" contain v-on:click="sell"> Sell </b-button>
             <br />
             <br />
@@ -61,51 +64,58 @@
 import NavBar from "../components/NavBar.vue";
 //Import MeatCard
 import MeatCard from "../components/MeatCard.vue";
+
+import { firestore } from "firebase"
+import { db, productCol } from "../firebase"
+
 export default {
   data() {
     return {
       title: "List",
       //Testing Examples
-      meatList: [
-        {
-          meatImg: "../assets/wagyuBeef.png",
-          meatName: "Wagyu Beef",
-          meatDescription: "Soft and tender on the outside and inside.",
-          meatQuantity: 10,
-        },
-        {
-          meatImg: "../assets/wagyuBeef.png",
-          meatName: "Pork Tenderloin",
-          meatDescription: "Tender on the outside and inside.",
-          meatQuantity: 50,
-        },
-        {
-          meatImg: "../assets/wagyuBeef.png",
-          meatName: "Pork Loin",
-          meatDescription: "Soft and tender on the inside.",
-          meatQuantity: 20,
-        },
-        {
-          meatImg: "../assets/wagyuBeef.png",
-          meatName: "Ground Pork",
-          meatDescription: "Pork that had been grounded.",
-          meatQuantity: 30,
-        },
-        {
-          meatImg: "../assets/wagyuBeef.png",
-          meatName: "Ground Beef",
-          meatDescription: "Beef that had been grounded.",
-          meatQuantity: 40,
-        },
-        {
-          meatImg: "../assets/wagyuBeef.png",
-          meatName: "Beef Tenderloin",
-          meatDescription: "Tender on the outside and inside.",
-          meatQuantity: 60,
-        },
-      ],
+      // meatList: [
+      //   {
+      //     meatImg: "../assets/wagyuBeef.png",
+      //     meatName: "Wagyu Beef",
+      //     meatDescription: "Soft and tender on the outside and inside.",
+      //     meatQuantity: 10,
+      //   },
+      //   {
+      //     meatImg: "../assets/wagyuBeef.png",
+      //     meatName: "Pork Tenderloin",
+      //     meatDescription: "Tender on the outside and inside.",
+      //     meatQuantity: 50,
+      //   },
+      //   {
+      //     meatImg: "../assets/wagyuBeef.png",
+      //     meatName: "Pork Loin",
+      //     meatDescription: "Soft and tender on the inside.",
+      //     meatQuantity: 20,
+      //   },
+      //   {
+      //     meatImg: "../assets/wagyuBeef.png",
+      //     meatName: "Ground Pork",
+      //     meatDescription: "Pork that had been grounded.",
+      //     meatQuantity: 30,
+      //   },
+      //   {
+      //     meatImg: "../assets/wagyuBeef.png",
+      //     meatName: "Ground Beef",
+      //     meatDescription: "Beef that had been grounded.",
+      //     meatQuantity: 40,
+      //   },
+      //   {
+      //     meatImg: "../assets/wagyuBeef.png",
+      //     meatName: "Beef Tenderloin",
+      //     meatDescription: "Tender on the outside and inside.",
+      //     meatQuantity: 60,
+      //   },
+      // ],
       stockModeOn: true,
     };
+  },
+  firestore() {
+    return { products: productCol }
   },
   methods: {
     switchMode: function (event) {

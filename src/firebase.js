@@ -16,3 +16,8 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig)
 
 export const db = app.firestore()
+export const productCol = db.collection("products")
+export const orderCol= db.collection("orders")
+export const deliveryCol = db.collection("delivery_orders")
+export const staffCol = db.collection("staff")
+export const customerCol = db.collection("customers")
