@@ -9,23 +9,19 @@
           <h1 class="border border-dark" id="title-card">{{ title }}</h1>
         </b-col>
         <b-col align="end">
-          <b-button class="add-product-btn" v-on:click="AddPro" 
-            >Add New Product</b-button
-          >
+          <AddFormCard v-bind:addProduct="addProduct" v-bind:addPro="addPro"/>
           <b-button class="switch-mode-btn" v-on:click="switchMode" v-if="stockModeOn"
             >Switch to Sell Mode</b-button
           >
           <b-button class="switch-mode-btn" v-on:click="switchMode" v-else
             >Switch to Stock Mode</b-button
           >
-          <ProductFormCard title="Edit"/>
         </b-col>
       </b-row>
 
       <br />
 
-
-      <b-row cols="2">
+      <b-row cols="4">
         <b-col
           align="center"
           class="border border-dark"
@@ -35,11 +31,12 @@
         >
           <!-- <MeatCard v-bind:product="product" /> -->
           <Meat-card :product_id="product.p_id" :product_name="product.p_name" 
-          :product_desc="product.p_description" :product_qty="product.qty" />
+          :product_desc="product.p_description" :product_qty="product.p_qty" />
           <div v-if="stockModeOn === true">
             <b-button id="add-btn" contain v-on:click="addQty"> Add stock </b-button>
-            <b-button id="edit-btn" contain v-on:click="edit"> Edit </b-button>
-            <b-button id="delete-btn" contain v-on:click="deletePro(product)"> Delete </b-button>
+            <ProductFormCard title="Edit"/>
+            <!-- <b-button id="edit-btn" contain v-on:click="edit"> Edit </b-button> -->
+            <b-button id="delete-btn" contain v-on:click="deletePro(product.p_id)"> Delete </b-button>
           </div>
           <div v-else>
             <b-button id="sell-btn" contain v-on:click="sell"> Sell </b-button>
@@ -60,6 +57,8 @@ import NavBar from "../components/NavBar.vue";
 import MeatCard from "../components/MeatCard.vue";
 //Import EditFormCard
 import ProductFormCard from "../components/ProductFormCard.vue";
+//Import AddFormCard
+import AddFormCard from "../components/AddFormCard.vue";
 
 import { firestore } from "firebase";
 import { db, productCol } from "../firebase";
@@ -69,11 +68,13 @@ export default {
     return {
       title: "List",
       products: [],
-      newProductName: '',
-      newProductId: '',
-      newProductDescription: '',
-      newProductQty: 0,
       stockModeOn: false,
+      addProduct: {
+        id: "",
+        name: "",
+        description: "",
+        qty: 0,
+      },
       //Testing Examples
       // meatList: [
       //   {
@@ -126,12 +127,7 @@ export default {
     }
   },
   created() {
-    db.collection('products').get().then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        this.products.push(doc.data())
-        console.log(doc.data())
-      })
-    })
+    this.getProducts()
   },
   methods: {
     switchMode: function (event) {
@@ -140,17 +136,27 @@ export default {
         this.stockModeOn = true;
       }
     },
-    AddPro: function () {
-      // this.$firestore.products.add({
-      //   p_name: this.newProductName,
-      //   p_id: this.newProductId,
-      //   p_description: this.newProductDescription,
-      //   qty: this.newProductQty
-      // });
-      // this.newProductName = '';
-      // this.newProductId = '';
-      // this.newProductDescription = '';
-      // this.newProductQty = 0;
+    getProducts: function () {
+      db.collection('products').get().then(querySnapshot => {
+        const products = []
+        querySnapshot.forEach(doc => {
+          products.push(doc.data())
+          console.log(doc.data())
+        })
+        this.products = products
+      })
+    },
+    addPro: function () {
+      db.collection('products').doc(this.addProduct.id).set( {
+        p_id: this.addProduct.id,
+        p_name: this.addProduct.name,
+        p_description: this.addProduct.description,
+        p_qty: this.addProduct.qty
+      } ).then(this.getProducts)
+      this.addProduct.id = ""
+      this.addProduct.name = ""
+      this.addProduct.description = ""
+      this.addProduct.qty = 0
     },
     sell: function (event) {
     },
@@ -158,14 +164,21 @@ export default {
     },
     edit: function (event) {
     },
-    deletePro: function (product) {
-      // this.$firestore.products.doc(product['.key']).delete();
+    deletePro: function (product_id) {
+      db.collection('products')
+        .where('p_id', '==', product_id).get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete().then(this.getProducts)
+          })
+        })
     }
   },
   components: {
     NavBar,
     MeatCard,
-    ProductFormCard
+    ProductFormCard,
+    AddFormCard
   },
 };
 </script>
