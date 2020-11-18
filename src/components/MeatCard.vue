@@ -19,8 +19,8 @@
 export default {
   props: { 
     product_id: {
-      type: Number, 
-      default: 0
+      type: String, 
+      default: "Null"
     },
     product_name: {
       type: String,

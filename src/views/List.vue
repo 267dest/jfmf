@@ -9,51 +9,45 @@
           <h1 class="border border-dark" id="title-card">{{ title }}</h1>
         </b-col>
         <b-col align="end">
+          <b-button class="add-product-btn" v-on:click="AddPro" 
+            >Add New Product</b-button
+          >
           <b-button class="switch-mode-btn" v-on:click="switchMode" v-if="stockModeOn"
             >Switch to Sell Mode</b-button
           >
           <b-button class="switch-mode-btn" v-on:click="switchMode" v-else
             >Switch to Stock Mode</b-button
           >
+          <ProductFormCard title="Edit"/>
         </b-col>
       </b-row>
 
       <br />
 
-      <div v-if="stockModeOn === true">
-        <b-row cols="2">
-          <b-col
-            align="center"
-            class="border border-dark"
-            id="meat-detail-card"
-            v-for="product in products"
-            :key="product.p_id"
-          >
-            <p>{{product.p_id}}</p>
-            <!-- <MeatCard v-bind:product="product" /> -->
-            <Meat-card :product_id="product.p_id" :product_name="product.p_name" 
-            :product_desc="product.p_description" :product_qty="product.qty" />
-            <br />
-          </b-col>
-        </b-row>
-      </div>
 
-      <div v-else>
-        <b-row cols="2">
-          <b-col
-            align="center"
-            class="border border-dark"
-            id="meat-detail-card"
-            v-for="product in products"
-            :key="product.p_id"
-          >
-            <MeatCard v-bind:product="product" />
+      <b-row cols="2">
+        <b-col
+          align="center"
+          class="border border-dark"
+          id="meat-detail-card"
+          v-for="product in products"
+          :key="product.p_id"
+        >
+          <!-- <MeatCard v-bind:product="product" /> -->
+          <Meat-card :product_id="product.p_id" :product_name="product.p_name" 
+          :product_desc="product.p_description" :product_qty="product.qty" />
+          <div v-if="stockModeOn === true">
+            <b-button id="add-btn" contain v-on:click="addQty"> Add stock </b-button>
+            <b-button id="edit-btn" contain v-on:click="edit"> Edit </b-button>
+            <b-button id="delete-btn" contain v-on:click="deletePro(product)"> Delete </b-button>
+          </div>
+          <div v-else>
             <b-button id="sell-btn" contain v-on:click="sell"> Sell </b-button>
-            <br />
-            <br />
-          </b-col>
-        </b-row>
-      </div>
+          </div>
+          <br />
+        </b-col>
+      </b-row>
+      
     </b-container>
     <br />
   </div>
@@ -64,14 +58,22 @@
 import NavBar from "../components/NavBar.vue";
 //Import MeatCard
 import MeatCard from "../components/MeatCard.vue";
+//Import EditFormCard
+import ProductFormCard from "../components/ProductFormCard.vue";
 
-import { firestore } from "firebase"
-import { db, productCol } from "../firebase"
+import { firestore } from "firebase";
+import { db, productCol } from "../firebase";
 
 export default {
   data() {
     return {
       title: "List",
+      products: [],
+      newProductName: '',
+      newProductId: '',
+      newProductDescription: '',
+      newProductQty: 0,
+      stockModeOn: false,
       //Testing Examples
       // meatList: [
       //   {
@@ -111,11 +113,25 @@ export default {
       //     meatQuantity: 60,
       //   },
       // ],
-      stockModeOn: true,
     };
   },
   firestore() {
-    return { products: productCol }
+    return {
+      // products: productCol.get().then((snapshot) => {
+      //   snapshot.docs.forEach(doc => {
+      //     this.products.push(doc)
+      //     console.log(doc.data())
+      //   })
+      // })
+    }
+  },
+  created() {
+    db.collection('products').get().then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        this.products.push(doc.data())
+        console.log(doc.data())
+      })
+    })
   },
   methods: {
     switchMode: function (event) {
@@ -124,19 +140,43 @@ export default {
         this.stockModeOn = true;
       }
     },
+    AddPro: function () {
+      // this.$firestore.products.add({
+      //   p_name: this.newProductName,
+      //   p_id: this.newProductId,
+      //   p_description: this.newProductDescription,
+      //   qty: this.newProductQty
+      // });
+      // this.newProductName = '';
+      // this.newProductId = '';
+      // this.newProductDescription = '';
+      // this.newProductQty = 0;
+    },
     sell: function (event) {
+    },
+    addQty: function (event) {
+    },
+    edit: function (event) {
+    },
+    deletePro: function (product) {
+      // this.$firestore.products.doc(product['.key']).delete();
     }
   },
   components: {
     NavBar,
     MeatCard,
+    ProductFormCard
   },
 };
 </script>
 
-<style>
+<style scoped>
 .switch-mode-btn {
-  font-size: 2vw;
+  font-size: 1.25vw;
+}
+
+.add-product-btn {
+  font-size: 1.25vw;
 }
 
 #meat-cards-container {
