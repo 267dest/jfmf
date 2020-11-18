@@ -21,7 +21,7 @@
             <td> {{ staff.email }} </td>
             <td v-if="staff.status" style="color=green">Online</td>
             <td v-if="!staff.status">offline</td>
-            <td><button>edit</button></td>
+            <td><button @click="edit(staff)">edit</button></td>
           </tr>
         </tbody>
       </table>
@@ -45,9 +45,9 @@
             <div class="autocomplete-fix">
               <input disabled type="password">
             </div>
-            <input id="staff-id" type="text" placeholder="Staff Email Address *" v-model="form.email">
+            <input :disabled="eState" id="staff-id" type="text" placeholder="Staff Email Address *" v-model="form.email">
             <input id="password" type="password" placeholder="Create Password *" v-model="form.password">
-            <input id="username" type="text" placeholder="Staff username *" v-model="form.username">
+            <input :disabled="eState" id="username" type="text" placeholder="Staff username *" v-model="form.username">
             <input id="name" type="text" placeholder="Staff name *" v-model="newstaff.name">
             <input id="birth_date" type="text" placeholder="Birth date *" v-model="newstaff.birth_date">
             <input id="phone_num" type="text" placeholder="Phone number *" v-model="newstaff.phone_num">
@@ -55,8 +55,9 @@
           <div style="margin-top: 13px">
           </div>
           <div class="button-set">
-            <button id="Register">Register</button>
+            <button id="Register">Submit</button>
             <button id="Cancel" @click="hide()">Cancel</button>
+            <button v-show="eState && this.form.email != 'admin@jfmf.com'" id="Delete" @click="Delete()">Delete</button>
           </div>
           </form>
         </div>
@@ -71,14 +72,17 @@
 
 <script>
 //Import Navbar
+import firebase from 'firebase'
+require('firebase/auth')
 import {mapState, mapActions} from 'vuex'
 import NavBar from '../components/NavBar.vue'
-import { firestore } from "firebase";
+import { firestore , auth } from "firebase";
 import { db, staffCol } from "../firebase";
 export default {
   data() {
     return {
       title: 'Member management',
+      eState: false,
        form: {
         email: '',
         password: '', 
@@ -87,7 +91,7 @@ export default {
       newstaff:{
         name:'',
        
-        phone_num: 0,
+        phone_num: '',
         birth_date: "",
         status: false,
       },
@@ -118,8 +122,23 @@ export default {
         if(this.alert.message=='Registration successful')
         setTimeout(this.hide, 3000)
       },
-
+      Delete(){
+      },
+      edit (stafff) {
+        
+        this.show()
+        this.eState = true
+        this.form.email = stafff.email
+        this.form.password= stafff.password, 
+        this.form.username= stafff.username,
+        this.newstaff.name=stafff.name,
+        this.newstaff.phone_num= stafff.phone_num,
+        this.newstaff.birth_date= stafff.birth_date
+      },
       show () {
+        this.eState = false
+        this.form = []
+        this.newstaff = []
         clearInterval(this.hide),
         this.clearAlert(),
         this.$modal.show('regis-popup')
@@ -137,7 +156,7 @@ export default {
       ...mapActions('account', ['register']),
       ...mapActions('alert', ['error']),
       handleSubmit(){
-        if(this.form.email && this.form.password){
+        if( this.form.email && this.form.password && this.form.username && this.newstaff.name && this.newstaff.phone_num && this.newstaff.birth_date){
           db.collection('staffs').doc(this.form.username).set({
             "email": this.form.email,
             "password": this.form.password,

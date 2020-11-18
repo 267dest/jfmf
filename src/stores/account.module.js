@@ -1,6 +1,6 @@
 import {userService} from '../services/user.service'
 import {router} from '../routes'
-import { db, staffCol } from "../firebase";
+import { db } from "../firebase";
 
 const user = JSON.parse(localStorage.getItem('user'))
 
@@ -90,7 +90,7 @@ const actions = {
                 })
            
 
-      }
+      },
 }
 
 
