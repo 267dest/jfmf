@@ -1,5 +1,6 @@
 import {userService} from '../services/user.service'
 import {router} from '../routes'
+import { db, staffCol } from "../firebase";
 
 const user = JSON.parse(localStorage.getItem('user'))
 
@@ -64,12 +65,31 @@ const actions = {
                   commit('loginFailure') 
                   dispatch('alert/error', error.message, { root: true })
             })
+
+            db.collection('staffs').get().then(querySnapshot => {
+                  querySnapshot.forEach(doc => {
+                    if( doc.get('email') == email){
+                          
+                          db.collection('staffs').doc(doc.get('username')).update({'status': true})
+                    }
+                  })
+                })
+            
       },
 
       logout({ commit }){
-            userService.logout()
+            db.collection('staffs').get().then(querySnapshot => {
+                  querySnapshot.forEach(doc => {
+                    if( doc.get('email') == user.email){
+                          db.collection('staffs').doc(doc.get('username')).update({'status': false})
+                           userService.logout()
             commit('logout')
             router.push('/')
+                    }
+                  })
+                })
+           
+
       }
 }
 
