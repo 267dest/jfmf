@@ -14,9 +14,9 @@
   <option>Order_by_margin</option>
 </select>
 <span>Selected: {{ selected }}</span>
-<button @click="getData(timeR,this.selected)">Submit</button>
+<button @click="getData()">Submit</button>
   </div>
-  <div :v-if="showBoo">
+  <div v-if="showBoo">
   <log-table :ODrinit="selected" :DOinit="D_order" :SOinit="S_order" :Dainit="timeR"></log-table>
   <button @click="hide()">Close</button>
   </div>
@@ -34,6 +34,7 @@ import DatePicker from 'vue2-datepicker';
 import {router} from "../routes"
 import { db } from "../firebase";
 import LogTable from '../components/logTable.vue';
+import moment from 'moment';
 export default {
   data() {
     return {
@@ -57,11 +58,12 @@ export default {
   created(){
      if(!this.user){
   router.push("/")}
+  this.showBoo = false
   db.collection('orders').get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
         this.tempOrd.push(doc.data())
         this.tempOrd.push(doc.ref.collection('detail'))
-        console.log(this.tempOrd)
+        this.tempOrd[0].date = this.tempOrd[0].date.toDate()
         this.S_order.push(this.tempOrd)
         this.tempOrd = []
       })
@@ -70,7 +72,7 @@ export default {
       querySnapshot.forEach(doc => {
         this.tempOrd.push(doc.data())
         this.tempOrd.push(doc.ref.collection('detail'))
-        console.log(this.tempOrd)
+        this.tempOrd[0].do_date = this.tempOrd[0].do_date.toDate()
         this.D_order.push(this.tempOrd)
         this.tempOrd = []
       })
