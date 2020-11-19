@@ -73,11 +73,12 @@
     </modal>
     
   
-    <modal name="regis-popup" transition="pop-out" :width="400" :focus-trap="true" :height="400" >
+    <modal class="modal-regis" name="regis-popup" transition="pop-out" :focus-trap="true" :height="500">
   <div class="regis-box">
     <div class="box-part" id="bp-left">
       <div class="partition" id="partition-login">
-        <div class="partition-title">REGISTRATION</div>
+        <div class="partition-title" style="color: black; text-align: center;">REGISTRATION</div>
+        <hr>
         <!-- alert box -->
         <div v-if ="alert.message" :class="`alert ${alert.type}`">
           {{alert.message}}
@@ -86,23 +87,31 @@
         <!-- end alert box -->
         <div class="partition-form">
           <form @submit.prevent="handleSubmit()" autocomplete="false">
-            <div class="autocomplete-fix">
-              <input disabled type="password">
+            <div style="display: none" class="autocomplete-fix">
+              <input  disabled type="password">
             </div>
-            <input :disabled="eState" id="staff-id" type="text" placeholder="Staff Email Address *" v-model="form.email">
-            <input id="password" type="password" placeholder="Create Password *" v-model="form.password">
-            <input :disabled="eState" id="username" type="text" placeholder="Staff username *" v-model="form.username">
-            <input id="name" type="text" placeholder="Staff name *" v-model="newstaff.name">
-            <input id="birth_date" type="text" placeholder="Birth date *" v-model="newstaff.birth_date">
-            <input id="phone_num" type="text" placeholder="Phone number *" v-model="newstaff.phone_num">
+            <label for="email"><b>Email</b></label>
+            <input name="email" :disabled="eState" id="staff-id" type="text" placeholder="Staff Email Address *" v-model="form.email">
+            <label for="password"><b>Password</b></label>
+            <input name="password" id="password" type="password" placeholder="Create Password *" v-model="form.password">
+            <label for="username"><b>Username</b></label>
+            <input name="username" :disabled="eState" id="username" type="text" placeholder="Staff username *" v-model="form.username">
+            <label for="name"><b>Name</b></label>
+            <input name="name" id="name" type="text" placeholder="Staff name *" v-model="newstaff.name">
+            <label for="birth_date"><b>Birth date</b></label>
+            <input name="birth_date" id="birth_date" type="text" placeholder="Birth date *" v-model="newstaff.birth_date">
+            <label for="phone_num"><b>Phone number</b></label>
+            <input name="phone_num" id="phone_num" type="text" placeholder="Phone number *" v-model="newstaff.phone_num">
             
           <div style="margin-top: 13px">
           </div>
-          <div class="button-set">
-            <button id="Register">Submit</button>
-            <button id="Cancel" @click="hide()">Cancel</button>
-            
+          <hr>
+          <p>*Required</p>
+          <div class="button-set" style="text-align: center;">
+            <button class="btn btn-primary" id="Register">Submit</button>
+            <button class="btn btn-secondary" id="Cancel" @click="hide()">Cancel</button>
           </div>
+       
           </form>
         </div>
       </div>
@@ -303,5 +312,35 @@ export default {
     box-shadow: 0px 2px 8px #888888;
   
   }
+
+  /* .modal-regis{
+    overflow-y:scroll;
+  } */
+
+
+  .regis-box {
+      position: relative;
+  height: 500px;
+    padding: 3em;
+      overflow-y:scroll;
+  
+  }
+
+  .box-part {
+    font-size: 1em; 
+    letter-spacing: 1px;
+    font-weight: 300;
+  }
+
+  input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+
 
 </style>
