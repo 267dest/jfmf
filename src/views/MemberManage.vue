@@ -23,9 +23,7 @@
 
 
     <div v-show="user.email == 'admin@jfmf.com'">
-    <h1> {{ title }} </h1>
-    <button v-if="user.email == 'admin@jfmf.com'" href="#" type="button" class="btn" @click="show()">Staff Register</button>
-      <button @click="edit()" class="btn">edit</button>
+    
       <button v-show="user.email != 'admin@jfmf.com'" id="Delete" class="btn btn-danger" @click="showConfirmaS()">Delete</button>
       <div id="employee-table">
         <table class="table table-bordered">
@@ -34,6 +32,7 @@
               <th>Name</th>
               <th>Email</th>
               <th>Status</th>
+              <th></th>
               </tr>
             </thead>
             <tbody>
@@ -41,26 +40,39 @@
               <tr v-show="!staff.deleted" :key="staff.username">
                 <td> {{ staff.name }} </td>
                 <td> {{ staff.email }} </td>
-                <td v-if="staff.status" style="color=green">Online</td>
-                <td v-if="!staff.status">offline</td>
-                <td style="width:5%"><button class="btn btn-danger" v-show="user.email == 'admin@jfmf.com' && staff.email != 'admin@jfmf.com'" @click="showConfirmaM(staff)">Delete</button></td>
+                <td class="text-success" v-if="staff.status">Online</td>
+                <td class="text-muted" v-if="!staff.status">Offline</td>
+                <td style="width:10%; text-align: center;"><button class="btn btn-danger" v-show="user.email == 'admin@jfmf.com' && staff.email != 'admin@jfmf.com'" @click="showConfirmaM(staff)">Delete</button></td>
               </tr>
               </template>
             </tbody>
           </table>
+          
         </div>
+        <div style="text-align:center;">
+            <button v-if="user.email == 'admin@jfmf.com'" href="#" type="button" class="btn btn-dark" @click="show()">Staff Register</button>
+            <button @click="edit()" class="btn btn-light">Edit</button>
+          </div>
       </div>
     <modal name="confirmS-popup" transition="pop-out" :width="400" :focus-trap="true" :height="400">
         <button class="btn btn-danger" @click="ConfirmaS()">Confirm</button>
         <button class="btn" @click="hideConfirmaS()">Cancel</button>
     </modal>
 
-    <modal name="confirmM-popup" transition="pop-out" :width="400" :focus-trap="true" :height="400">
+    <modal name="confirmM-popup" transition="pop-out" :width="400" :focus-trap="true" :height="205">
+      <div class="modal-header" style="background-color: #5D3916;">
+        <h5 class="modal-title" style="color: white">Confirm Deletion</h5>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to remove this user?</p>
+      </div>
+      <div class="modal-footer">
         <button class="btn btn-danger" @click="ConfirmaM()">Confirm</button>
         <button class="btn" @click="hideConfirmaM()">Cancel</button>
+      </div>
     </modal>
     
-
+  
     <modal name="regis-popup" transition="pop-out" :width="400" :focus-trap="true" :height="400" >
   <div class="regis-box">
     <div class="box-part" id="bp-left">
@@ -97,6 +109,7 @@
     </div>
   </div>
 </modal>
+
 
   </div>
 
@@ -271,15 +284,24 @@ export default {
 </script>
 
 <style>
-  table, tr, td { 
-    border: 1px solid black;
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:300);
+
+  * {
+    font-family: "Roboto", sans-serif;
   }
-  h1 {
+  th {
     text-align: center;
-    margin: 1 auto;
   }
 
-  .btn {
-    border:1px solid black;
+  .btn-light, .btn-dark {
+    width: 150px;
+    margin: 4px 2px;
   }
+  #employee-table {
+    margin: 50px;
+    box-shadow: 0px 2px 8px #888888;
+  
+  }
+
 </style>
