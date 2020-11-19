@@ -3,33 +3,53 @@
   <div>
     <!-- Use NavBar -->
     <nav-bar></nav-bar>
-    <h1> {{ title }} </h1>
-    <a v-if="user.email == 'admin@jfmf.com'" href="#" type="button" class="cta" @click="show()">Staff Register</a>
-    <button @click="edit()">edit</button>
-    <button v-show="this.user.email != 'admin@jfmf.com'" id="Delete" class="btn btn-danger" @click="showConfirmaS()">Delete</button>
-    <div id="employee-table">
-      <table class="table table-bordered">
-        <thead class="thead-dark">
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Status</th>
-            
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="staff in staffs" >
-          <tr v-show="!staff.deleted" :key="staff.username">
-            <td> {{ staff.name }} </td>
-            <td> {{ staff.email }} </td>
-            <td v-if="staff.status" style="color=green">Online</td>
-            <td v-if="!staff.status">offline</td>
-            <td><button class="btn btn-danger" v-show="user.email == 'admin@jfmf.com' && staff.email != 'admin@jfmf.com'" @click="showConfirmaM(staff)">Delete</button></td>
-          </tr>
-          </template>
-        </tbody>
-      </table>
+
+
+    <div v-show="user.email != 'admin@jfmf.com'">
+      <h1>Profile</h1>
+      <button @click="edit()" class="btn  ml-auto">edit</button>
+        <template v-for="staff in staffs" >
+              <ul v-if="staff.email == user.email" :key="staff.username">
+                  <li>Name: {{ staff.name }}</li>
+                  <li>Username: {{ staff.username }}</li>
+                  <li>Email: {{ staff.email }}</li>
+                  <li>Phone number: {{ staff.phone_num }}</li>
+              </ul>
+        </template>
+
     </div>
+
+
+
+
+    <div v-show="user.email == 'admin@jfmf.com'">
+    <h1> {{ title }} </h1>
+    <button v-if="user.email == 'admin@jfmf.com'" href="#" type="button" class="btn" @click="show()">Staff Register</button>
+      <button @click="edit()" class="btn">edit</button>
+      <button v-show="user.email != 'admin@jfmf.com'" id="Delete" class="btn btn-danger" @click="showConfirmaS()">Delete</button>
+      <div id="employee-table">
+        <table class="table table-bordered">
+          <thead class="thead-dark">
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="staff in staffs" >
+              <tr v-show="!staff.deleted" :key="staff.username">
+                <td> {{ staff.name }} </td>
+                <td> {{ staff.email }} </td>
+                <td v-if="staff.status" style="color=green">Online</td>
+                <td v-if="!staff.status">offline</td>
+                <td style="width:5%"><button class="btn btn-danger" v-show="user.email == 'admin@jfmf.com' && staff.email != 'admin@jfmf.com'" @click="showConfirmaM(staff)">Delete</button></td>
+              </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
     <modal name="confirmS-popup" transition="pop-out" :width="400" :focus-trap="true" :height="400">
         <button class="btn btn-danger" @click="ConfirmaS()">Confirm</button>
         <button class="btn" @click="hideConfirmaS()">Cancel</button>
@@ -130,7 +150,6 @@ export default {
       alert: state => state.alert
     }),
     ...mapState('account', ['user']),
-    
   },
     methods: {
       ...mapActions({
@@ -186,8 +205,6 @@ export default {
       },
       edit () {
         this.staffs.forEach(staff => {
-          console.log(staff.email)
-          console.log(this.user.email)
           if(this.user.email == staff.email){
           this.eState = true
           this.form.email = staff.email
@@ -260,5 +277,9 @@ export default {
   h1 {
     text-align: center;
     margin: 1 auto;
+  }
+
+  .btn {
+    border:1px solid black;
   }
 </style>

@@ -83,11 +83,18 @@ const actions = {
                     }
                   })
                 })
-                      
-               
-            
 
-            
+                commit('loginRequest', { email })
+            userService.login(email, password)
+            .then(user => {
+                  commit('loginSuccess', user)
+                  dispatch('alert/success','Login successful', {root: true}).then(function () {router.push("/list");})
+            })
+            .catch(error =>{
+                  commit('loginFailure') 
+                  dispatch('alert/error', error.message, { root: true })
+            })
+       
             
       },
 

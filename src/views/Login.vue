@@ -9,7 +9,7 @@
               <div class="autocomplete-fix" style="display: none;">
                 <input disabled type="password">
               </div>
-              <input id="username" type="text" placeholder="Staff Email Address *" v-model="form.email" style="position: relative;top:15px;">
+              <input id="username" type="text" placeholder="Email or username *" v-model="form.email" style="position: relative;top:15px;">
               <input id="password" type="password" placeholder="Password *" v-model="form.password" style="position: relative;top:15px;">
               
             <div class="button-set" style="position: relative;top:15px;">

@@ -1,7 +1,7 @@
 <template>
   <div id="NavBar">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="/list">Navbar</a>
+      <a class="navbar-brand" href="/list">MasterFarm</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -21,19 +21,24 @@
               >Catalog</a
             >
           </li>
-          <li class="nav-item active">
+          <li class="nav-item active" >
             <a class="nav-link" href="/invenlog"
               >Log</a
             >
           </li>
          <li class="nav-item active">
-            <a class="nav-link" href="/member"
-              >Member</a
-            ></li>
+            <a class="nav-link" href="/member" v-if="user.email == 'admin@jfmf.com'" s>
+            Member Management
+            </a>
+            <a class="nav-link" href="/member" v-if="user.email != 'admin@jfmf.com'">
+            Profile
+            </a>
+              </li>
           </ul>
           <ul class="navbar-nav ml-auto">
+            <li class="nav-item active"> <a class="nav-link">{{ user.email }}</a></li>
           <li class="nav-item active">
-            <a class="nav-link" @click="LogOut()">Log Out</a>
+            <a class="nav-link" href="#" @click="LogOut()">Log Out</a>
           </li>
         </ul>
       </div>
@@ -46,6 +51,13 @@ import {mapState, mapActions} from 'vuex'
 import {router} from '../routes'
 export default {
   name: "NavBar",
+    computed: {
+    ...mapState({
+      alert: state => state.alert
+    }),
+    ...mapState('account', ['user']),
+    
+  },
   methods: {
         ...mapActions('account',['logout']),
         LogOut(){
