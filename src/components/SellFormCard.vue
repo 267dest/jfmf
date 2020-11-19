@@ -9,14 +9,14 @@
     />
     <div>
       <b-button @click="onCancelSell">Cancel</b-button>
-      <b-button @click="onSellSubmit(product)">Confirm</b-button>
+      <b-button @click="onAddSell()">Confirm</b-button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-    props: ['sellProduct', 'onCancelSell', 'onSellSubmit', 'product']
+    props: ['sellProduct', 'onCancelSell', 'onAddSell']
 }
 </script>
 

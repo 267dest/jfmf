@@ -9,14 +9,14 @@
     />
     <div>
       <b-button @click="onCancelAddProQty">Cancel</b-button>
-      <b-button @click="onAddProQtySubmit(product)">Confirm</b-button>
+      <b-button @click="onAddToCart()">Confirm</b-button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-    props: ['addProductQty', 'onCancelAddProQty', 'onAddProQtySubmit', 'product'],
+    props: ['addProductQty', 'onCancelAddProQty', 'onAddToCart'],
 }
 </script>
 
