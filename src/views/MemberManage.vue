@@ -108,8 +108,8 @@
           <hr>
           <p>*Required</p>
           <div class="button-set" style="text-align: center;">
-            <button class="btn btn-primary" id="Register">Submit</button>
-            <button class="btn btn-secondary" id="Cancel" @click="hide()">Cancel</button>
+            <button class="btn btn-primary" id="Register" style="width: 49%;">Submit</button>
+            <button class="btn btn-secondary" id="Cancel" @click="hide()" style="width: 49%;">Cancel</button>
           </div>
        
           </form>
