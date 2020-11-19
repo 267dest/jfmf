@@ -62,7 +62,7 @@ export default {
   db.collection('orders').get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
         this.tempOrd.push(doc.data())
-        this.tempOrd.push(doc.ref.collection('detail'))
+        this.tempOrd.push(doc.ref.collection('detail').get())
         this.tempOrd[0].date = this.tempOrd[0].date.toDate()
         this.S_order.push(this.tempOrd)
         this.tempOrd = []

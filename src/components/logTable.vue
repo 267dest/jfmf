@@ -41,6 +41,9 @@ export default {
     methods:{
         show(rec){
             this.recp = rec
+                console.log(rec
+                )
+            console.log(rec)
             this.$modal.show('detail-popup')
         },
         hide(){
