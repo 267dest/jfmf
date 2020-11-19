@@ -16,8 +16,10 @@
 <span>Selected: {{ selected }}</span>
 <button @click="getData(timeR,this.selected)">Submit</button>
   </div>
-
-
+  <div :v-if="showBoo">
+  <log-table :ODrinit="selected" :DOinit="D_order" :SOinit="S_order" :Dainit="timeR"></log-table>
+  <button @click="hide()">Close</button>
+  </div>
   </div>
 
 </template>
@@ -31,9 +33,11 @@ import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
 import {router} from "../routes"
 import { db } from "../firebase";
+import LogTable from '../components/logTable.vue';
 export default {
   data() {
     return {
+      showBoo: false,
       title: "Log",
         timeR: null,
         selected: "",
@@ -43,9 +47,12 @@ export default {
     }
   },
   methods: {
-    getData(date,odrby){
-      
+    getData(){
+      this.showBoo = true
     },
+    hide(){
+      this.showBoo = false
+    }
   },
   created(){
      if(!this.user){
@@ -77,7 +84,8 @@ export default {
   },
   components: {
     NavBar, DatePicker,
-    logTab
+    logTab,
+    LogTable
   }
 };
 </script>
