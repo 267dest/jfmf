@@ -29,16 +29,48 @@
           v-for="product in products"
           :key="product.p_id"
         >
-          <!-- <MeatCard v-bind:product="product" /> -->
-          <Meat-card :product_id="product.p_id" :product_name="product.p_name" 
-          :product_desc="product.p_description" :product_qty="product.p_qty" />
           <div v-if="stockModeOn === true">
-            <b-button id="add-btn" contain v-on:click="addQty"> Add stock </b-button>
-            <ProductFormCard title="Edit"/>
-            <!-- <b-button id="edit-btn" contain v-on:click="edit"> Edit </b-button> -->
-            <b-button id="delete-btn" contain v-on:click="deletePro(product.p_id)"> Delete </b-button>
+
+            <div v-if="editId === product.p_id"
+              class="collection-item products__list-item">
+              <ProductFormCard 
+                v-bind:editProduct="editProduct" 
+                v-bind:onCancel="onCancel"
+                v-bind:onEditSubmit="onEditSubmit"
+                />
+            </div>
+            
+            <div v-else>
+              <Meat-card :product_id="product.p_id" :product_name="product.p_name" 
+              :product_desc="product.p_description" :product_qty="product.p_qty" 
+              :product_price="product.p_price"/>
+              <div v-if="addProductQty.id === product.p_id">
+                
+                <AddProQtyCard 
+                v-bind:addProductQty="addProductQty"
+                v-bind:onCancelAddProQty="onCancelAddProQty"
+                v-bind:onAddProQtySubmit="onAddProQtySubmit"
+                v-bind:product="product"/>
+
+              </div>
+              <div v-else>
+                <div v-if="deleteProId === product.p_id">
+                  <b-button @click="onCancelDelete">Cancel</b-button>
+                  <b-button @click="onDeleteSubmit(product.p_id)">Confirm</b-button>
+                </div>
+                <div v-else>
+                  <b-button id="add-btn" contain @click="addQty(product)"> Add stock </b-button>
+                  <b-button @click="edit(product)">Edit</b-button>
+                  <b-button id="delete-btn" contain @click="deletePro(product)"> Delete </b-button>
+                </div>
+              </div>
+            </div>
+
           </div>
           <div v-else>
+            <Meat-card :product_id="product.p_id" :product_name="product.p_name" 
+            :product_desc="product.p_description" :product_qty="product.p_qty" 
+            :product_price="product.p_price" />
             <b-button id="sell-btn" contain v-on:click="sell"> Sell </b-button>
           </div>
           <br />
@@ -59,6 +91,8 @@ import MeatCard from "../components/MeatCard.vue";
 import ProductFormCard from "../components/ProductFormCard.vue";
 //Import AddFormCard
 import AddFormCard from "../components/AddFormCard.vue";
+//Import AddProQtyCard
+import AddProQtyCard from "../components/AddProQtyCard.vue";
 
 import { firestore } from "firebase";
 import { db, productCol } from "../firebase";
@@ -73,8 +107,22 @@ export default {
         id: "",
         name: "",
         description: "",
-        qty: 0,
+        qty: 1,
+        price: 0
       },
+      editId: "",
+      editProduct: {
+        id: "",
+        name: "",
+        description: "",
+        qty: 1,
+        price: 0
+      },
+      addProductQty: {
+        id: "",
+        qty: 1
+      },
+      deleteProId: "",
       //Testing Examples
       // meatList: [
       //   {
@@ -141,30 +189,58 @@ export default {
         const products = []
         querySnapshot.forEach(doc => {
           products.push(doc.data())
-          console.log(doc.data())
+          // console.log(doc.data())
         })
         this.products = products
       })
     },
+    // Add new product to database
     addPro: function () {
       db.collection('products').doc(this.addProduct.id).set( {
         p_id: this.addProduct.id,
         p_name: this.addProduct.name,
         p_description: this.addProduct.description,
-        p_qty: this.addProduct.qty
+        p_qty: this.addProduct.qty,
+        p_price: this.addProduct.price
       } ).then(this.getProducts)
       this.addProduct.id = ""
       this.addProduct.name = ""
       this.addProduct.description = ""
-      this.addProduct.qty = 0
+      this.addProduct.qty = 1
+      this.addProduct.price = 0
     },
+    // Sell product
     sell: function (event) {
     },
-    addQty: function (event) {
+    // Add quantity of the selected product
+    addQty: function (product) {
+      this.addProductQty.id = product.p_id
+      this.addProductQty.qty = 1
     },
-    edit: function (event) {
+    onCancelAddProQty: function () {
+      this.addProductQty.id = ""
+      this.addProductQty.qty = 1
     },
-    deletePro: function (product_id) {
+    onAddProQtySubmit: function (product) {
+      db.collection('products')
+        .where('p_id', '==', this.addProductQty.id).get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.update({
+              p_qty: this.addProductQty.qty + product.p_qty,
+            }).then(this.getProducts)
+          })
+          this.onCancelAddProQty()
+        })
+    },
+    // Delete product
+    deletePro: function (product) {
+      this.deleteProId = product.p_id
+    },
+    onCancelDelete: function () {
+      this.deleteProId = ""
+    },
+    onDeleteSubmit: function (product_id) {
       db.collection('products')
         .where('p_id', '==', product_id).get()
         .then(querySnapshot => {
@@ -172,13 +248,47 @@ export default {
             doc.ref.delete().then(this.getProducts)
           })
         })
+    },
+    // Edit detail of the selected product
+    edit: function (product) {
+      this.editId = product.p_id
+      this.editProduct.name = product.p_name
+      this.editProduct.id = product.p_id
+      this.editProduct.description = product.p_description
+      this.editProduct.qty = product.p_qty
+      this.editProduct.price = product.p_price
+    },
+    onCancel: function () {
+      this.editId = ""
+      this.editProduct.name = ""
+      this.editProduct.id = ""
+      this.editProduct.description = ""
+      this.editProduct.qty = 1
+      this.editProduct.price = 0
+    },
+    onEditSubmit: function () {
+      db.collection('products')
+        .where('p_id', '==', this.editId).get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.set({
+              p_id: this.editId,
+              p_name: this.editProduct.name,
+              p_description: this.editProduct.description,
+              p_qty: this.editProduct.qty,
+              p_price: this.editProduct.price
+            }).then(this.getProducts)
+          })
+          this.onCancel()
+        })
     }
   },
   components: {
     NavBar,
     MeatCard,
     ProductFormCard,
-    AddFormCard
+    AddFormCard,
+    AddProQtyCard
   },
 };
 </script>

@@ -12,6 +12,9 @@
     <div id="font-style2">
       <span>Quantity: {{ p_qty }}</span>
     </div>
+    <div id="font-style2">
+      <span>Price: {{ p_price }}</span>
+    </div>
   </div>
 </template>
 
@@ -34,6 +37,10 @@ export default {
       type: Number,
       default: 0
     },
+    product_price: {
+      type: Number,
+      default: 0
+    }
   },
 
   data() {
@@ -41,13 +48,14 @@ export default {
       p_id: this.product_id,
       p_name: this.product_name,
       p_desc: this.product_desc,
-      p_qty: this.product_qty
+      p_qty: this.product_qty,
+      p_price: this.product_price
     };
   },
 };
 </script>
 
-<style scoped>
+<style>
 .meat-img {
   height: 12vw;
 }
