@@ -1,27 +1,30 @@
 <template>
   <div>
-    <b-button v-b-modal.modal-add-product>Add Product</b-button>
-        <b-modal id="modal-add-product" title="Add Product" @ok="addPro">
+    <b-button class="addproduct-btn" variant="outline-info" v-b-modal.modal-add-product>Add Product</b-button>
+        <b-modal id="modal-add-product" title="ADD PRODUCT" size="md" @ok="addPro">
+          <div class="form-body">
           <div>
             ID
-            <br />
-            <input v-model="addProduct.id" class="validate" placeholder="ID">
+            <br/>
+            <input type="text" v-model="addProduct.id" class="validate" placeholder="ID">
           </div>
           <div>
             Name
             <br />
-            <input v-model="addProduct.name" class="validate" placeholder="Name">
+            <input type="text" v-model="addProduct.name" class="validate" placeholder="Name">
           </div>
           <div>
             Description
             <br />
-            <input v-model="addProduct.description" class="validate" placeholder="Description">
+            <input type="text" v-model="addProduct.description" class="validate" placeholder="Description">
           </div>
           <div>
             Price
             <br />
-            <input v-model.number="addProduct.price" class="validate" placeholder="Price">
+            <input type="text" v-model.number="addProduct.price" class="validate" placeholder="Price">
           </div>
+          </div>
+         
         </b-modal>
   </div>
 </template>
@@ -35,4 +38,28 @@ export default {
 </script>
 
 <style>
+
+.form-body {
+
+    text-align: center;
+    font-size: 1em; 
+    letter-spacing: 1px;
+    font-weight: 300;
+   
+}
+
+.addproduct-btn{
+    width: 200px;
+    margin: 4px 2px;
+}
+
+  input[type=text] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
 </style>

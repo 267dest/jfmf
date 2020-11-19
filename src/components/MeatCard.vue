@@ -3,19 +3,19 @@
     <div>
       <img src="../assets/wagyuBeef.png" class="meat-img" contain />
     </div>
-    <div id="font-style1">
+    <div id="font-id">
       <span>{{ p_id }}</span>
     </div>
-    <div id="font-style1">
+    <div id="font-name">
       <span>{{ p_name }}</span>
     </div>
-    <div id="font-style2">
+    <div id="font-desc">
       <span>{{ p_desc }}</span>
     </div>
-    <div id="font-style2">
+    <div id="font-qty">
       <span>Quantity: {{ p_qty }}</span>
     </div>
-    <div id="font-style2">
+    <div id="font-price">
       <span>Price: {{ p_price }}</span>
     </div>
   </div>
@@ -63,16 +63,13 @@ export default {
   height: 12vw;
 }
 
-#meat-name-span {
-  font-size: 3vw;
-  color: grey;
+#font-id, #font-name {
+  font-size: 30px;
+  text-align: left;
 }
 
-#font-style1 {
-  font-size: 3vw;
-}
-
-#font-style2 {
-  font-size: 2vw;
+#font-qty, #font-desc, #font-price {
+  font-size: 16px;
+  text-align: left;
 }
 </style>

@@ -1,15 +1,16 @@
 <template>
-  <div>
+  <div class="sell-footer">
     Input amount
     <br />
     <input
+      id="input-amount-box"
       v-model.number="sellProduct.qty"
       class="validate"
       :placeholder="sellProduct.qty"
     />
     <div>
-      <b-button @click="onCancelSell">Cancel</b-button>
-      <b-button @click="onAddSell()">Confirm</b-button>
+      <b-button variant="outline-secondary" id="cancle-sell-btn" @click="onCancelSell">Cancel</b-button>
+      <b-button variant="success" id="confirm-sell-btn" @click="onAddSell()">Confirm</b-button>
     </div>
   </div>
 </template>
@@ -21,5 +22,22 @@ export default {
 </script>
 
 <style>
+.sell-footer {
+  margin: 10px;
+  color: green;
+}
+
+#cancle-sell-btn {
+  margin-top: 5px;
+}
+
+#confirm-sell-btn {
+  margin-top: 5px;
+}
+
+#input-amount-box {
+  width: 100%;
+}
+
 
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div align="center">
+  <div class="cart-space" align="center">
     <h1>Shopping Cart</h1>
     <b-row cols="3">
       <b-col>
@@ -12,14 +12,14 @@
     </b-row>
     <div v-for="(item, key) in shoppingCart" :key="key">
       <b-row cols="3">
-        <b-col>
+        <b-col style="margin-top: 20px;">
           <span>{{ item.id }}</span>
         </b-col>
-        <b-col>
+        <b-col style="margin-top: 20px;">
           <span>{{ item.qty }}</span>
         </b-col>
-        <b-col>
-          <b-button @click="removeProduct(key)">Remove</b-button>
+        <b-col style="margin-top: 10px;">
+          <b-button variant="outline-danger" @click="removeProduct(key)">Remove</b-button>
         </b-col>
       </b-row>
     </div>
@@ -33,4 +33,5 @@ export default {
 </script>
 
 <style>
+
 </style>

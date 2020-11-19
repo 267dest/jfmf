@@ -39,8 +39,8 @@
     <br />
     <br />
     <div>
-      <b-button @click="onCancel">Cancel</b-button>
-      <b-button @click="onEditSubmit">Confirm</b-button>
+      <b-button variant="outline-secondary" @click="onCancel">Cancel</b-button>
+      <b-button variant="primary" @click="onEditSubmit">Confirm</b-button>
     </div>
   </div>
 </template>
