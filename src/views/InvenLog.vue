@@ -56,17 +56,30 @@ export default {
     }
   },
   created(){
-     if(!this.user){
-  router.push("/")}
-  this.showBoo = false
-  db.collection('orders').get().then(querySnapshot => {
+    if(!this.user){
+      router.push("/")
+    }
+    this.showBoo = false
+    db.collection('orders').get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
         this.tempOrd.push(doc.data())
-        this.tempOrd.push(doc.ref.collection('detail').get())
+        console.log(doc.data())
         this.tempOrd[0].date = this.tempOrd[0].date.toDate()
+        db.collection('orders').doc(doc.data().o_id).collection('detail').get().then(querySnapshot2 => {
+          var tmpList = []
+          // tmpList.push(doc.data().o_id)
+          querySnapshot2.forEach(doc2 => {
+            tmpList.push(doc2.data())
+            // console.log(doc2.data())
+          })
+          this.tempOrd.push(tmpList)
+          // console.log(tmpList)
+        })
+        // console.log(this.tempOrd)
         this.S_order.push(this.tempOrd)
         this.tempOrd = []
       })
+      // console.log(this.S_order)
     })
     db.collection('delivery_orders').get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
