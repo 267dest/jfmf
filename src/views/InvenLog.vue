@@ -1,69 +1,93 @@
 <template>
-<!-- This is template for inserting navBar to files -->
+
+<div>
+  <nav-bar></nav-bar>
   <div>
-    <!-- Use NavBar -->
-    <nav-bar></nav-bar>
-
-    <h1> {{ title }} </h1>
-
-    <div id="inventLog_table">
-      <table class="table table-bordered">
-        <thead class="thead-dark">
-          <tr>
-            <th>Username</th>
-            <th>date</th>
-            <th>time</th>
-            <th>activity</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="inventLog in inventLogs" :key="inventLog.num">
-            <td>{{inventLog.Username}}</td>
-            <td> {{ inventLog.date }} </td>
-            <td> {{ inventLog.time }} </td>
-            <td> {{ inventLog.activity }} </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
+    <h1>{{ title }}</h1>
+    <date-picker v-model="timeR" range></date-picker>
+    
+    
+    <select v-model="selected">
+  <option disabled value="">Please select order type</option>
+  <option>Order_by_date</option>
+  <option>Order_by_quantity</option>
+  <option>Order_by_margin</option>
+</select>
+<span>Selected: {{ selected }}</span>
+<button @click="getData()">Submit</button>
   </div>
+  <div v-if="showBoo">
+  <log-table :ODrinit="selected" :DOinit="D_order" :SOinit="S_order" :Dainit="timeR"></log-table>
+  <button @click="hide()">Close</button>
+  </div>
+  </div>
+
 </template>
 
 <script>
 //Import Navbar
 import NavBar from '../components/NavBar.vue'
+import logTab from '../components/logTable'
+import {mapState, mapActions} from 'vuex'
+import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+import {router} from "../routes"
+import { db } from "../firebase";
+import LogTable from '../components/logTable.vue';
+import moment from 'moment';
 export default {
   data() {
     return {
-      title: 'Inventory Log',
-      //Test
-      inventLogs: [
-{       
-        num: 1 ,
-        Username: 'Abra' ,
-        date: '09/10/2022' ,
-        time: '14:02:53'  ,
-        activity: 'sale' ,
+      showBoo: false,
+      title: "Log",
+        timeR: null,
+        selected: "",
+        S_order: [],
+        D_order: [],
+        tempOrd: [],
+    }
   },
-  {
-      num: 2 ,
-      Username: 'Abby' ,
-      date: '08/11/2022',
-      time: '15:05:53',
-      activity: 'check' ,
-  }
-      ]
+  methods: {
+    getData(){
+      this.showBoo = true
+    },
+    hide(){
+      this.showBoo = false
     }
   },
   created(){
      if(!this.user){
   router.push("/")}
+  this.showBoo = false
+  db.collection('orders').get().then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        this.tempOrd.push(doc.data())
+        this.tempOrd.push(doc.ref.collection('detail'))
+        this.tempOrd[0].date = this.tempOrd[0].date.toDate()
+        this.S_order.push(this.tempOrd)
+        this.tempOrd = []
+      })
+    })
+    db.collection('delivery_orders').get().then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        this.tempOrd.push(doc.data())
+        this.tempOrd.push(doc.ref.collection('detail'))
+        this.tempOrd[0].do_date = this.tempOrd[0].do_date.toDate()
+        this.D_order.push(this.tempOrd)
+        this.tempOrd = []
+      })
+    })
   },
-  methods: {
+    computed: {
+    ...mapState({
+      alert: state => state.alert
+    }),
+    ...mapState('account', ['user']),
   },
   components: {
-    NavBar
+    NavBar, DatePicker,
+    logTab,
+    LogTable
   }
 };
 </script>
