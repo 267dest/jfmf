@@ -71,7 +71,16 @@
             <Meat-card :product_id="product.p_id" :product_name="product.p_name" 
             :product_desc="product.p_description" :product_qty="product.p_qty" 
             :product_price="product.p_price" />
-            <b-button id="sell-btn" contain v-on:click="sell"> Sell </b-button>
+            <div v-if="sellProduct.id === product.p_id">
+              <SellFormCard 
+              v-bind:sellProduct="sellProduct"
+              v-bind:onCancelSell="onCancelSell"
+              v-bind:onSellSubmit="onSellSubmit"
+              v-bind:product="product"/>
+            </div>
+            <div v-else>
+              <b-button id="sell-btn" contain @click="sell(product)"> Sell </b-button>
+            </div>
           </div>
           <br />
         </b-col>
@@ -93,6 +102,9 @@ import ProductFormCard from "../components/ProductFormCard.vue";
 import AddFormCard from "../components/AddFormCard.vue";
 //Import AddProQtyCard
 import AddProQtyCard from "../components/AddProQtyCard.vue";
+//Import SellFormCard
+import SellFormCard from "../components/SellFormCard.vue";
+
 import {mapState, mapActions} from 'vuex'
 
 import { firestore } from "firebase";
@@ -109,7 +121,7 @@ export default {
         id: "",
         name: "",
         description: "",
-        qty: 1,
+        qty: 0,
         price: 0
       },
       editId: "",
@@ -117,7 +129,7 @@ export default {
         id: "",
         name: "",
         description: "",
-        qty: 1,
+        qty: 0,
         price: 0
       },
       addProductQty: {
@@ -125,45 +137,10 @@ export default {
         qty: 1
       },
       deleteProId: "",
-      //Testing Examples
-      // meatList: [
-      //   {
-      //     meatImg: "../assets/wagyuBeef.png",
-      //     meatName: "Wagyu Beef",
-      //     meatDescription: "Soft and tender on the outside and inside.",
-      //     meatQuantity: 10,
-      //   },
-      //   {
-      //     meatImg: "../assets/wagyuBeef.png",
-      //     meatName: "Pork Tenderloin",
-      //     meatDescription: "Tender on the outside and inside.",
-      //     meatQuantity: 50,
-      //   },
-      //   {
-      //     meatImg: "../assets/wagyuBeef.png",
-      //     meatName: "Pork Loin",
-      //     meatDescription: "Soft and tender on the inside.",
-      //     meatQuantity: 20,
-      //   },
-      //   {
-      //     meatImg: "../assets/wagyuBeef.png",
-      //     meatName: "Ground Pork",
-      //     meatDescription: "Pork that had been grounded.",
-      //     meatQuantity: 30,
-      //   },
-      //   {
-      //     meatImg: "../assets/wagyuBeef.png",
-      //     meatName: "Ground Beef",
-      //     meatDescription: "Beef that had been grounded.",
-      //     meatQuantity: 40,
-      //   },
-      //   {
-      //     meatImg: "../assets/wagyuBeef.png",
-      //     meatName: "Beef Tenderloin",
-      //     meatDescription: "Tender on the outside and inside.",
-      //     meatQuantity: 60,
-      //   },
-      // ],
+      sellProduct: {
+        id: "",
+        qty: 1
+      }
     };
   },
   firestore() {
@@ -221,7 +198,24 @@ export default {
       this.addProduct.price = 0
     },
     // Sell product
-    sell: function (event) {
+    sell: function (product) {
+      this.sellProduct.id = product.p_id
+    },
+    onCancelSell: function () {
+      this.sellProduct.id = ""
+      this.sellProduct.qty = 1
+    },
+    onSellSubmit: function (product) {
+      db.collection('products')
+        .where('p_id', '==', this.sellProduct.id).get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.update({
+              p_qty: product.p_qty - this.sellProduct.qty,
+            }).then(this.getProducts)
+          })
+          this.onCancelSell()
+        })
     },
     // Add quantity of the selected product
     addQty: function (product) {
@@ -299,7 +293,8 @@ export default {
     MeatCard,
     ProductFormCard,
     AddFormCard,
-    AddProQtyCard
+    AddProQtyCard,
+    SellFormCard
   },
 };
 </script>

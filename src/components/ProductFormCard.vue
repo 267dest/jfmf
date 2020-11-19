@@ -20,6 +20,7 @@
       class="validate"
       :placeholder="editProduct.description"
     ></textarea>
+    <br />
     Quantity
     <br />
     <input

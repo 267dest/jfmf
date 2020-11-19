@@ -18,9 +18,9 @@
             <input v-model="addProduct.description" class="validate" placeholder="Description">
           </div>
           <div>
-            Quantity
+            Price
             <br />
-            <input v-model.number="addProduct.qty" class="validate" placeholder="Quantity">
+            <input v-model.number="addProduct.price" class="validate" placeholder="Price">
           </div>
         </b-modal>
   </div>
