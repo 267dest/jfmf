@@ -62,17 +62,7 @@ const actions = {
                           if(doc.get('username') == email){
                               email = doc.get('email')
                           }
-                          db.collection('staffs').doc(doc.get('username')).update({'status': true})
-                          if(doc.get("deleted")){
-                              firebase.auth().currentUser.delete()
-                              doc.delete()
-                              this.outto( commit ).then(router.push('/'))
-                              
-                   }
-                    }
-                  })
-                }).then(function () {
-                      commit('loginRequest', { email })
+                          commit('loginRequest', { email })
             userService.login(email, password)
             .then(user => {
                   commit('loginSuccess', user)
@@ -82,7 +72,19 @@ const actions = {
                   commit('loginFailure') 
                   dispatch('alert/error', error.message, { root: true })
             })
+                          if(doc.get("deleted")){
+                              firebase.auth().currentUser.delete()
+                              doc.ref.delete()
+                                 
+                   }
+                   
+                  db.collection('staffs').doc(doc.get('username')).update({'status': true})
+                          
+                    }
+                  })
                 })
+                      
+               
             
 
             

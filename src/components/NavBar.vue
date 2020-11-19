@@ -33,7 +33,7 @@
           </ul>
           <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
-            <button class="nav-link" @click="LogOut()">Log Out</button>
+            <a class="nav-link" @click="LogOut()">Log Out</a>
           </li>
         </ul>
       </div>
@@ -55,4 +55,6 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+
+</style>

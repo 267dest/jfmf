@@ -6,12 +6,13 @@
     <h1> {{ title }} </h1>
     <a v-if="user.email == 'admin@jfmf.com'" href="#" type="button" class="cta" @click="show()">Staff Register</a>
     <button @click="edit()">edit</button>
+    <button v-show="this.user.email != 'admin@jfmf.com'" id="Delete" class="btn btn-danger" @click="showConfirmaS()">Delete</button>
     <div id="employee-table">
       <table class="table table-bordered">
         <thead class="thead-dark">
           <tr>
-            <th>Employee name</th>
-            <th>Employee email</th>
+            <th>Name</th>
+            <th>Email</th>
             <th>Status</th>
             
           </tr>
@@ -23,14 +24,22 @@
             <td> {{ staff.email }} </td>
             <td v-if="staff.status" style="color=green">Online</td>
             <td v-if="!staff.status">offline</td>
-            <td><button class="btn btn-danger" v-show="user.email == 'admin@jfmf.com' && staff.email != 'admin@jfmf.com'" @click="adminDel(staff)">Delete</button></td>
+            <td><button class="btn btn-danger" v-show="user.email == 'admin@jfmf.com' && staff.email != 'admin@jfmf.com'" @click="showConfirmaM(staff)">Delete</button></td>
           </tr>
           </template>
         </tbody>
       </table>
     </div>
+    <modal name="confirmS-popup" transition="pop-out" :width="400" :focus-trap="true" :height="400">
+        <button class="btn btn-danger" @click="ConfirmaS()">Confirm</button>
+        <button class="btn" @click="hideConfirmaS()">Cancel</button>
+    </modal>
 
-
+    <modal name="confirmM-popup" transition="pop-out" :width="400" :focus-trap="true" :height="400">
+        <button class="btn btn-danger" @click="ConfirmaM()">Confirm</button>
+        <button class="btn" @click="hideConfirmaM()">Cancel</button>
+    </modal>
+    
 
     <modal name="regis-popup" transition="pop-out" :width="400" :focus-trap="true" :height="400" >
   <div class="regis-box">
@@ -60,7 +69,7 @@
           <div class="button-set">
             <button id="Register">Submit</button>
             <button id="Cancel" @click="hide()">Cancel</button>
-            <button v-show="eState && this.form.email != 'admin@jfmf.com'" id="Delete" class="btn btn-danger" @click="Delete()">Delete</button>
+            
           </div>
           </form>
         </div>
@@ -89,6 +98,7 @@ export default {
       title: 'Member management',
       eState: false,
       adminOn: false,
+      userM: '',
        form: {
         email: '',
         password: '', 
@@ -126,10 +136,34 @@ export default {
       ...mapActions({
       clearAlert: 'alert/clear'
       }),
+      showConfirmaS(){this.$modal.hide('regis-popup')
+        this.$modal.show('confirmS-popup')},
+      ConfirmaS () {
+         this.Delete()
+        this.hideConfirma()
+      },
+      hideConfirmaS(){
+        this.$modal.hide('confirmS-popup')
+        this.confirma = []
+      },
+
+
+      showConfirmaM(Mem){
+        this.userM = Mem
+        this.$modal.show('confirmM-popup')},
+      ConfirmaM () {
+        this.adminDel(this.userM)
+      },
+      hideConfirmaM(){
+        this.$modal.hide('confirmM-popup')
+        this.userM = '';
+      },
       checkHide(){
         if(this.alert.message=='Registration successful')
         setTimeout(this.hide, 3000).then(this.reload())
       },
+
+
       adminDel(staff){
         db.collection('staffs').get().then(querySnapshot => {
                   querySnapshot.forEach(doc => {
@@ -140,18 +174,14 @@ export default {
                 }).then(this.reload)
       },
       Delete(){
-         var admin = []
         db.collection('staffs').get().then(querySnapshot => {
                   querySnapshot.forEach(doc => {
                     if( doc.get('email') == firebase.auth().currentUser.email && doc.get('email') != "admin@jfmf.com"){
                       console.log("while del firebase "+firebase.auth().currentUser.email)
-                          db.collection('staffs').doc(doc.get('username')).delete()
+                          db.collection('staffs').doc(doc.get('username')).update({'deleted': true}).then(this.logout())
                     }
                   })
-                }).then(function () {
-                if(firebase.auth().currentUser.email != 'admin@jfmf.com'){
-                 firebase.auth().currentUser.delete().then(router.push('/'))
-                  }})
+                })
                     
       },
       edit () {

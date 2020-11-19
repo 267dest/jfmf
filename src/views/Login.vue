@@ -1,13 +1,18 @@
 <template>
         <div class="partition-form">
           <div class="form">
+            <img class="logo" src="../assets/Logo.jpg">
+            <div v-if="alert.message" :class="`alert ${alert.type}`" style="position: relative;top:15px;">
+          {{alert.message}}
+        </div>
             <form @submit.prevent="handleSubmit()" autocomplete="false">
               <div class="autocomplete-fix" style="display: none;">
                 <input disabled type="password">
               </div>
-              <input id="username" type="text" placeholder="Staff Email Address *" v-model="form.email">
-              <input id="password" type="password" placeholder="Password *" v-model="form.password">
-            <div class="button-set">
+              <input id="username" type="text" placeholder="Staff Email Address *" v-model="form.email" style="position: relative;top:15px;">
+              <input id="password" type="password" placeholder="Password *" v-model="form.password" style="position: relative;top:15px;">
+              
+            <div class="button-set" style="position: relative;top:15px;">
               <button id="Login">Login</button>
             </div>
             </form>
@@ -77,7 +82,8 @@ created(){
   z-index: 1;
   background: #FFFFFF;
   max-width: 360px;
-  margin: 0 auto 100px;
+  margin-left: auto;
+  margin-right: auto;
   padding: 45px;
   text-align: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
@@ -123,6 +129,11 @@ body{
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.logo{
+  width: 60%;
+  height: 60%;
 }
 
 </style>
