@@ -4,6 +4,9 @@
       <img src="../assets/wagyuBeef.png" class="meat-img" contain />
     </div>
     <div id="font-style1">
+      <span>{{ p_id }}</span>
+    </div>
+    <div id="font-style1">
       <span>{{ p_name }}</span>
     </div>
     <div id="font-style2">

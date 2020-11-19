@@ -4,7 +4,71 @@
     <b-container id="meat-cards-container">
       <br />
       <b-row cols="3">
-        <b-col></b-col>
+        <b-col>
+            <b-button id="confirm-sell-btn" contain 
+            v-b-modal.modal-confirm-sell-product v-if="!stockModeOn"
+            @click="calcTotalPrice"> 
+              Confirm Sell 
+            </b-button>
+            <b-modal id="modal-confirm-sell-product" title="Confirm sell" @ok="onSellSubmit(shoppingCart)">
+              <b-row cols="3" align="center">
+                <b-col>
+                  <span>Product ID</span>
+                </b-col>
+                <b-col>
+                  <span>Amount</span>
+                </b-col>
+                <b-col>
+                  <span>Price</span>
+                </b-col>
+              </b-row>    
+              <div v-for="(item, key) in shoppingCart" :key="key">
+                <b-row cols="3" align="center">
+                  <b-col>
+                    <span>{{ item.id }}</span>
+                  </b-col>
+                  <b-col>
+                    <span>{{ item.qty }}</span>
+                  </b-col>
+                  <b-col>
+                    <span>{{ item.price }}</span>
+                  </b-col>
+                </b-row>
+              </div>
+              <b-row cols="3">
+                <b-col></b-col>
+                <b-col>
+                  <span>Total Price: {{ totalPrice }}</span>
+                </b-col>
+                <b-col></b-col>
+              </b-row>
+            </b-modal>
+
+            <b-button id="confirm-add-btn" contain 
+            v-b-modal.modal-confirm-add-stock v-if="stockModeOn"> 
+              Confirm Add Stock 
+            </b-button>
+            <b-modal id="modal-confirm-add-stock" title="Confirm add stock" @ok="onAddProQtySubmit(stockCart)">
+              <b-row cols="2" align="center">
+                <b-col>
+                  <span>Product ID</span>
+                </b-col>
+                <b-col>
+                  <span>Amount</span>
+                </b-col>
+              </b-row>    
+              <div v-for="(item, key) in stockCart" :key="key">
+                <b-row cols="2" align="center">
+                  <b-col>
+                    <span>{{ item.id }}</span>
+                  </b-col>
+                  <b-col>
+                    <span>{{ item.qty }}</span>
+                  </b-col>
+                </b-row>
+              </div>
+            </b-modal>
+        </b-col>
         <b-col align="center">
           <h1 class="border border-dark" id="title-card">{{ title }}</h1>
         </b-col>
@@ -18,6 +82,50 @@
           >
         </b-col>
       </b-row>
+
+      <br />
+
+      <div
+        class="border border-dark"
+        id="meat-detail-card"
+        v-if="stockModeOn"
+      >
+        <div align="center">
+          <h1>Stock Cart</h1>
+          <b-row cols="3">
+            <b-col>
+              <span>Product ID</span>
+            </b-col>
+            <b-col>
+              <span>Amount</span>
+            </b-col>
+            <b-col></b-col>
+          </b-row>
+          <div v-for="(item, key) in stockCart" :key="key">
+            <b-row cols="3">
+              <b-col>
+                <span>{{ item.id }}</span>
+              </b-col>
+              <b-col>
+                <span>{{ item.qty }}</span>
+              </b-col>
+              <b-col>
+                <b-button @click="removeProStock(key)">Remove</b-button>
+              </b-col>
+            </b-row>
+          </div>
+        </div>
+      </div>
+      <div
+        class="border border-dark"
+        id="meat-detail-card"
+        v-else
+      >
+        <ShoppingCart 
+        v-bind:shoppingCart="shoppingCart"
+        v-bind:removeProduct="removeProduct"
+        /> 
+      </div>
 
       <br />
 
@@ -49,8 +157,8 @@
                 <AddProQtyCard 
                 v-bind:addProductQty="addProductQty"
                 v-bind:onCancelAddProQty="onCancelAddProQty"
-                v-bind:onAddProQtySubmit="onAddProQtySubmit"
-                v-bind:product="product"/>
+                v-bind:onAddToCart="onAddToCart"
+                />
 
               </div>
               <div v-else>
@@ -59,7 +167,7 @@
                   <b-button @click="onDeleteSubmit(product.p_id)">Confirm</b-button>
                 </div>
                 <div v-else>
-                  <b-button id="add-btn" contain @click="addQty(product)"> Add stock </b-button>
+                  <b-button id="add-btn" contain @click="addQty(product)"> Add to cart </b-button>
                   <b-button @click="edit(product)">Edit</b-button>
                   <b-button id="delete-btn" contain @click="deletePro(product)"> Delete </b-button>
                 </div>
@@ -75,11 +183,11 @@
               <SellFormCard 
               v-bind:sellProduct="sellProduct"
               v-bind:onCancelSell="onCancelSell"
-              v-bind:onSellSubmit="onSellSubmit"
-              v-bind:product="product"/>
+              v-bind:onAddSell="onAddSell"
+              />
             </div>
             <div v-else>
-              <b-button id="sell-btn" contain @click="sell(product)"> Sell </b-button>
+              <b-button id="sell-btn" contain @click="sell(product)"> Add to shopping cart </b-button>
             </div>
           </div>
           <br />
@@ -104,6 +212,10 @@ import AddFormCard from "../components/AddFormCard.vue";
 import AddProQtyCard from "../components/AddProQtyCard.vue";
 //Import SellFormCard
 import SellFormCard from "../components/SellFormCard.vue";
+//Import ShoppingCart
+import ShoppingCart from "../components/ShoppingCart.vue";
+//Import Timestamp
+import { Timestamp } from "firebase";
 
 import {mapState, mapActions} from 'vuex'
 
@@ -139,8 +251,12 @@ export default {
       deleteProId: "",
       sellProduct: {
         id: "",
-        qty: 1
-      }
+        qty: 1,
+        price: 0
+      },
+      shoppingCart: [],
+      stockCart: [],
+      totalPrice: 0,
     };
   },
   firestore() {
@@ -200,22 +316,68 @@ export default {
     // Sell product
     sell: function (product) {
       this.sellProduct.id = product.p_id
+      this.sellProduct.price = product.p_price
     },
     onCancelSell: function () {
       this.sellProduct.id = ""
       this.sellProduct.qty = 1
+      this.sellProduct.price = 0
     },
-    onSellSubmit: function (product) {
-      db.collection('products')
-        .where('p_id', '==', this.sellProduct.id).get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            doc.ref.update({
-              p_qty: product.p_qty - this.sellProduct.qty,
-            }).then(this.getProducts)
-          })
-          this.onCancelSell()
+    onResetCart: function () {
+      this.shoppingCart = []
+    },
+    onAddSell: function () {
+      this.shoppingCart.push({
+        id: this.sellProduct.id,
+        qty: this.sellProduct.qty,
+        price: this.sellProduct.qty * this.sellProduct.price
         })
+      this.onCancelSell()
+    },
+    onSellSubmit: function (shoppingCart) {
+      const today = new Date();
+      var monthTmp = today.getMonth()+1;
+      if(monthTmp < 10) monthTmp = "0" + monthTmp;
+      var dateTmp = today.getDate();
+      if(dateTmp < 10) dateTmp = "0" + dateTmp;
+      var hourTmp = today.getHours();
+      if(hourTmp == 0) hourTmp = "00";
+      else if(hourTmp < 10) hourTmp = "0" + hourTmp;
+      var minTmp = today.getMinutes();
+      if(minTmp == 0) minTmp = "00";
+      else if(minTmp < 10) minTmp = "0" + minTmp;
+      const infoDate = (today.getFullYear()-2000)+''+monthTmp+''+dateTmp+''+hourTmp+''+minTmp;
+      
+      db.collection('orders').doc(infoDate).set({
+        o_id: infoDate,
+        date: today,
+        o_total: this.totalPrice
+      })
+      var currentProducts = this.products;
+      var currentQty = 0;
+      shoppingCart.forEach(function (item) {
+        db.collection('orders').doc(infoDate).collection('detail').doc(item.id).set({
+          p_id: item.id,
+          o_amount: item.qty
+        })
+        currentProducts.forEach(function (eachPro) {
+          if(eachPro.p_id == item.id) {
+            currentQty = eachPro.p_qty
+            // console.log(currentQty)
+          }
+        }) 
+        db.collection('products')
+          .where('p_id', '==', item.id).get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              doc.ref.update({
+                p_qty: currentQty - item.qty
+              })
+            })
+          })
+      })
+      this.getProducts()
+      this.onResetCart()
     },
     // Add quantity of the selected product
     addQty: function (product) {
@@ -226,17 +388,65 @@ export default {
       this.addProductQty.id = ""
       this.addProductQty.qty = 1
     },
-    onAddProQtySubmit: function (product) {
-      db.collection('products')
-        .where('p_id', '==', this.addProductQty.id).get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            doc.ref.update({
-              p_qty: this.addProductQty.qty + product.p_qty,
-            }).then(this.getProducts)
-          })
-          this.onCancelAddProQty()
+    onAddToCart: function () {
+      this.stockCart.push({
+        id: this.addProductQty.id,
+        qty: this.addProductQty.qty
         })
+      this.onCancelAddProQty()
+    },
+    onResetStockCart: function() {
+      this.stockCart = []
+    },
+    onAddProQtySubmit: function (stockCart) {
+      const today = new Date();
+      var monthTmp = today.getMonth()+1;
+      if(monthTmp < 10) monthTmp = "0" + monthTmp;
+      var dateTmp = today.getDate();
+      if(dateTmp < 10) dateTmp = "0" + dateTmp;
+      var hourTmp = today.getHours();
+      if(hourTmp == 0) hourTmp = "00";
+      else if(hourTmp < 10) hourTmp = "0" + hourTmp;
+      var minTmp = today.getMinutes();
+      if(minTmp == 0) minTmp = "00";
+      else if(minTmp < 10) minTmp = "0" + minTmp;
+      const infoDate = (today.getFullYear()-2000)+''+monthTmp+''+dateTmp+''+hourTmp+''+minTmp;
+
+
+      db.collection('delivery_orders').doc(infoDate).set({
+        do_id: infoDate,
+        do_date: today,
+
+
+        // do_total: 
+
+
+      })
+      var currentProducts = this.products;
+      var currentQty = 0;
+      stockCart.forEach(function (item) {
+        db.collection('delivery_orders').doc(infoDate).collection('detail').doc(item.id).set({
+          p_id: item.id,
+          d_amount: item.qty
+        })
+        currentProducts.forEach(function (eachPro) {
+          if(eachPro.p_id == item.id) {
+            currentQty = eachPro.p_qty
+            // console.log(currentQty)
+          }
+        }) 
+        db.collection('products')
+          .where('p_id', '==', item.id).get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              doc.ref.update({
+                p_qty: currentQty + item.qty
+              })
+            })
+          })
+      })
+      this.getProducts()
+      this.onResetStockCart()
     },
     // Delete product
     deletePro: function (product) {
@@ -286,7 +496,20 @@ export default {
           })
           this.onCancel()
         })
-    }
+    },
+    removeProduct: function (key) {
+      this.shoppingCart.splice(key, 1)
+    },
+    removeProStock: function (key) {
+      this.stockCart.splice(key, 1)
+    },
+    calcTotalPrice: function () {
+      var total = 0;
+      this.shoppingCart.forEach(function (item) {
+        total += item.price
+      })
+      this.totalPrice = total;
+    } 
   },
   components: {
     NavBar,
@@ -294,7 +517,8 @@ export default {
     ProductFormCard,
     AddFormCard,
     AddProQtyCard,
-    SellFormCard
+    SellFormCard,
+    ShoppingCart
   },
 };
 </script>
@@ -306,6 +530,16 @@ export default {
 
 .add-product-btn {
   font-size: 1.25vw;
+}
+
+.confirm-sell-btn {
+  width: 15vw;
+  height: 4vw;
+}
+
+.confirm-add-btn {
+  width: 15vw;
+  height: 4vw;
 }
 
 #meat-cards-container {
@@ -324,8 +558,8 @@ export default {
 }
 
 #sell-btn {
-  width: 5vw;
-  height: 3vw;
+  width: 20vw;
+  height: 4vw;
 }
 </style>
 
