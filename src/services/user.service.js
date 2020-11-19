@@ -16,6 +16,10 @@ function logout() {
 }
 
 function register(user){
+      if(user.email == firebase.auth().currentUser.email){
+            return firebase.auth()
+            .currentUser.updatePassword(user.password)
+      }
       return firebase.auth()
       .createUserWithEmailAndPassword(user.email, user.password)
       .then(data => {

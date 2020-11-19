@@ -33,7 +33,7 @@
           </ul>
           <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
-            <button class="nav-link" @click="logout()">Log Out</button>
+            <button class="nav-link" @click="LogOut()">Log Out</button>
           </li>
         </ul>
       </div>
@@ -43,10 +43,14 @@
 
 <script>
 import {mapState, mapActions} from 'vuex'
+import {router} from '../routes'
 export default {
   name: "NavBar",
   methods: {
         ...mapActions('account',['logout']),
+        LogOut(){
+          this.logout()
+        }
     }
 };
 </script>

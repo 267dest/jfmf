@@ -5,7 +5,7 @@
     <nav-bar></nav-bar>
     <h1> {{ title }} </h1>
     <a v-if="user.email == 'admin@jfmf.com'" href="#" type="button" class="cta" @click="show()">Staff Register</a>
-
+    <button @click="edit()">edit</button>
     <div id="employee-table">
       <table class="table table-bordered">
         <thead class="thead-dark">
@@ -13,16 +13,19 @@
             <th>Employee name</th>
             <th>Employee email</th>
             <th>Status</th>
+            
           </tr>
         </thead>
         <tbody>
-          <tr v-for="staff in staffs" :key="staff.username">
+          <template v-for="staff in staffs" >
+          <tr v-show="!staff.deleted" :key="staff.username">
             <td> {{ staff.name }} </td>
             <td> {{ staff.email }} </td>
             <td v-if="staff.status" style="color=green">Online</td>
             <td v-if="!staff.status">offline</td>
-            <td><button @click="edit(staff)">edit</button></td>
+            <td><button class="btn btn-danger" v-show="user.email == 'admin@jfmf.com' && staff.email != 'admin@jfmf.com'" @click="adminDel(staff)">Delete</button></td>
           </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -57,7 +60,7 @@
           <div class="button-set">
             <button id="Register">Submit</button>
             <button id="Cancel" @click="hide()">Cancel</button>
-            <button v-show="eState && this.form.email != 'admin@jfmf.com'" id="Delete" @click="Delete()">Delete</button>
+            <button v-show="eState && this.form.email != 'admin@jfmf.com'" id="Delete" class="btn btn-danger" @click="Delete()">Delete</button>
           </div>
           </form>
         </div>
@@ -74,15 +77,18 @@
 //Import Navbar
 import firebase from 'firebase'
 require('firebase/auth')
+import {router} from '../routes'
 import {mapState, mapActions} from 'vuex'
 import NavBar from '../components/NavBar.vue'
 import { firestore , auth } from "firebase";
 import { db, staffCol } from "../firebase";
+
 export default {
   data() {
     return {
       title: 'Member management',
       eState: false,
+      adminOn: false,
        form: {
         email: '',
         password: '', 
@@ -100,6 +106,8 @@ export default {
 
     }
   },created() {
+    if(!this.user){
+  router.push("/")}
     db.collection('staffs').get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
         this.staffs.push(doc.data())
@@ -120,21 +128,49 @@ export default {
       }),
       checkHide(){
         if(this.alert.message=='Registration successful')
-        setTimeout(this.hide, 3000)
+        setTimeout(this.hide, 3000).then(this.reload())
+      },
+      adminDel(staff){
+        db.collection('staffs').get().then(querySnapshot => {
+                  querySnapshot.forEach(doc => {
+                    if( doc.get('email') == staff.email && doc.get('email') != "admin@jfmf.com"){
+                          db.collection('staffs').doc(doc.get('username')).update({'deleted': true})
+                    }
+                  })
+                }).then(this.reload)
       },
       Delete(){
+         var admin = []
+        db.collection('staffs').get().then(querySnapshot => {
+                  querySnapshot.forEach(doc => {
+                    if( doc.get('email') == firebase.auth().currentUser.email && doc.get('email') != "admin@jfmf.com"){
+                      console.log("while del firebase "+firebase.auth().currentUser.email)
+                          db.collection('staffs').doc(doc.get('username')).delete()
+                    }
+                  })
+                }).then(function () {
+                if(firebase.auth().currentUser.email != 'admin@jfmf.com'){
+                 firebase.auth().currentUser.delete().then(router.push('/'))
+                  }})
+                    
       },
-      edit (stafff) {
-        
-        this.show()
-        this.eState = true
-        this.form.email = stafff.email
-        this.form.password= stafff.password, 
-        this.form.username= stafff.username,
-        this.newstaff.name=stafff.name,
-        this.newstaff.phone_num= stafff.phone_num,
-        this.newstaff.birth_date= stafff.birth_date
-      },
+      edit () {
+        this.staffs.forEach(staff => {
+          console.log(staff.email)
+          console.log(this.user.email)
+          if(this.user.email == staff.email){
+          this.eState = true
+          this.form.email = staff.email
+          this.form.password= staff.password, 
+          this.form.username= staff.username,
+          this.newstaff.name=staff.name,
+          this.newstaff.phone_num= staff.phone_num,
+          this.newstaff.birth_date= staff.birth_date}
+        });
+        clearInterval(this.hide),
+        this.clearAlert(),
+        this.$modal.show('regis-popup')
+         },
       show () {
         this.eState = false
         this.form = []
@@ -155,6 +191,9 @@ export default {
         },
       ...mapActions('account', ['register']),
       ...mapActions('alert', ['error']),
+      ...mapActions('account',['logout']),
+      ...mapActions('account',['outto']),
+      ...mapActions('account', ['login']),
       handleSubmit(){
         if( this.form.email && this.form.password && this.form.username && this.newstaff.name && this.newstaff.phone_num && this.newstaff.birth_date){
           db.collection('staffs').doc(this.form.username).set({
@@ -165,16 +204,17 @@ export default {
             "phone_num": this.newstaff.phone_num,
             "birth_date": this.newstaff.birth_date,
             "status": false,
-          }).then(this.register(this.form).then(
-            this.newstaff = []
-          ))
+            "deleted": false
+          }).then(this.register(this.form))
         }
         else{
           this.error("All fields are required");
         }
         this.form = {email: '',
                   password: '',
-                  username: '',}
+                  username: '',}.then(
+            this.newstaff = []
+          ).then(this.reload())
       }
   },
   components: {

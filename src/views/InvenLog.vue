@@ -56,6 +56,10 @@ export default {
       ]
     }
   },
+  created(){
+     if(!this.user){
+  router.push("/")}
+  },
   methods: {
   },
   components: {

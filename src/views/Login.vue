@@ -17,6 +17,7 @@
 
 <script>
 import {mapState, mapActions} from 'vuex'
+import { router } from '../routes'
 export default {
   data() {
     return {
@@ -30,6 +31,10 @@ export default {
     mapState,
     mapActions,
   },
+created(){
+  if(this.user){
+  router.push("/list")}
+},
   computed: {
     ...mapState({
       alert: state => state.alert
@@ -38,6 +43,7 @@ export default {
   },
   methods: {    
     ...mapActions('account', ['login']),
+    ...mapActions('account', ['outto']),
     ...mapActions('alert', ['error']),
     handleSubmit(e){
       if(this.form.email && this.form.password){

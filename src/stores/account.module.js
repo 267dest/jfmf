@@ -1,6 +1,8 @@
 import {userService} from '../services/user.service'
 import {router} from '../routes'
 import { db } from "../firebase";
+import firebase from 'firebase'
+require('firebase/auth')
 
 const user = JSON.parse(localStorage.getItem('user'))
 
@@ -54,26 +56,36 @@ const actions = {
       },
       
       login( { dispatch,commit }, { email, password }){
-            commit('loginRequest', { email })
+            db.collection('staffs').get().then(querySnapshot => {
+                  querySnapshot.forEach(doc => {
+                    if( doc.get('email') == email || doc.get('username') == email){
+                          if(doc.get('username') == email){
+                              email = doc.get('email')
+                          }
+                          db.collection('staffs').doc(doc.get('username')).update({'status': true})
+                          if(doc.get("deleted")){
+                              firebase.auth().currentUser.delete()
+                              doc.delete()
+                              this.outto( commit ).then(router.push('/'))
+                              
+                   }
+                    }
+                  })
+                }).then(function () {
+                      commit('loginRequest', { email })
             userService.login(email, password)
             .then(user => {
                   commit('loginSuccess', user)
-                  dispatch('alert/success','Login successful', {root: true})
-                  router.push({ name : 'List' })
+                  dispatch('alert/success','Login successful', {root: true}).then(function () {router.push("/list");})
             })
             .catch(error =>{
                   commit('loginFailure') 
                   dispatch('alert/error', error.message, { root: true })
             })
-
-            db.collection('staffs').get().then(querySnapshot => {
-                  querySnapshot.forEach(doc => {
-                    if( doc.get('email') == email){
-                          
-                          db.collection('staffs').doc(doc.get('username')).update({'status': true})
-                    }
-                  })
                 })
+            
+
+            
             
       },
 
@@ -83,14 +95,15 @@ const actions = {
                     if( doc.get('email') == user.email){
                           db.collection('staffs').doc(doc.get('username')).update({'status': false})
                            userService.logout()
-            commit('logout')
-            router.push('/')
+                        commit('logout')
                     }
                   })
-                })
-           
-
+                }).then(function () {router.push("/")})
       },
+
+      outto({ commit }){
+            commit('logout')
+      }
 }
 
 

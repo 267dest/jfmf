@@ -59,9 +59,11 @@ import MeatCard from "../components/MeatCard.vue";
 import ProductFormCard from "../components/ProductFormCard.vue";
 //Import AddFormCard
 import AddFormCard from "../components/AddFormCard.vue";
+import {mapState, mapActions} from 'vuex'
 
 import { firestore } from "firebase";
 import { db, productCol } from "../firebase";
+import { router } from '../routes';
 
 export default {
   data() {
@@ -126,8 +128,16 @@ export default {
       // })
     }
   },
-  created() {
+  created() { 
+if(!this.user){
+  router.push("/")}
     this.getProducts()
+  },
+  computed: {
+    ...mapState({
+      alert: state => state.alert
+    }),
+    ...mapState('account', ['user']),
   },
   methods: {
     switchMode: function (event) {
