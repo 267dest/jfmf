@@ -2,10 +2,10 @@
 
   <div id="app">
     <!-- Use this on real product version of web app
-      <router-view v-show="this.$route.name == 'Login' || user"></router-view>
+      <router-view></router-view>
      instead of the one below -->
-    <router-view></router-view>
-     
+    
+     <router-view v-show="this.$route.name == 'Login' || user"></router-view>
   </div>
 </template>
 
@@ -16,6 +16,7 @@ export default {
   data() {
     return {
     }
+    
   },
     computed: {
     ...mapState('account', ['user'])

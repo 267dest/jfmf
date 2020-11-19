@@ -10,6 +10,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { firestorePlugin } from 'vuefire'
 import {store} from './stores'
+import vmodal from 'vue-js-modal'
 
 Vue.config.productionTip = false
 
@@ -21,6 +22,7 @@ Vue.use(firestorePlugin)
 Vue.use(IconsPlugin)
 Vue.use(Vuex)
 Vue.use(VueRouter)
+Vue.use(vmodal) 
 
 
 new Vue({

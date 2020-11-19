@@ -93,9 +93,11 @@ import ProductFormCard from "../components/ProductFormCard.vue";
 import AddFormCard from "../components/AddFormCard.vue";
 //Import AddProQtyCard
 import AddProQtyCard from "../components/AddProQtyCard.vue";
+import {mapState, mapActions} from 'vuex'
 
 import { firestore } from "firebase";
 import { db, productCol } from "../firebase";
+import { router } from '../routes';
 
 export default {
   data() {
@@ -174,8 +176,17 @@ export default {
       // })
     }
   },
-  created() {
+  created() { 
+    if(!this.user){
+      router.push("/")
+    }
     this.getProducts()
+  },
+  computed: {
+    ...mapState({
+      alert: state => state.alert
+    }),
+    ...mapState('account', ['user']),
   },
   methods: {
     switchMode: function (event) {
