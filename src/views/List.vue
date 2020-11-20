@@ -405,13 +405,13 @@ export default {
       var currentProducts = this.products;
       var currentQty = 0;
       shoppingCart.forEach(function (item) {
-        db.collection("orders")
-          .doc(infoDate)
-          .collection("detail")
-          .doc(item.id)
+        db.collection("orders_detail")
+          .doc(infoDate+item.id)
           .set({
             p_id: item.id,
             o_amount: item.qty,
+            o_price: item.price,
+            o_id: infoDate
           });
         currentProducts.forEach(function (eachPro) {
           if (eachPro.p_id == item.id) {
@@ -430,7 +430,7 @@ export default {
             });
           });
       });
-      this.getProducts();
+      this.reload();
       this.onResetCart();
     },
     // Add quantity of the selected product
@@ -485,13 +485,12 @@ export default {
       var currentProducts = this.products;
       var currentQty = 0;
       stockCart.forEach(function (item) {
-        db.collection("delivery_orders")
-          .doc(infoDate)
-          .collection("detail")
-          .doc(item.id)
+        db.collection("delivery_detail")
+          .doc(infoDate+item.id)
           .set({
+            do_id: infoDate,
             p_id: item.id,
-            d_amount: item.qty,
+            d_amount: item.qty
           });
         currentProducts.forEach(function (eachPro) {
           if (eachPro.p_id == item.id) {
@@ -510,7 +509,7 @@ export default {
             });
           });
       });
-      this.getProducts();
+      this.reload();
       this.onResetStockCart();
     },
     // Delete product
@@ -564,7 +563,8 @@ export default {
               .then(this.getProducts);
           });
           this.onCancel();
-        });
+        })
+        .then(this.reload)
     },
     removeProduct: function (key) {
       this.shoppingCart.splice(key, 1);
@@ -578,6 +578,9 @@ export default {
         total += item.price;
       });
       this.totalPrice = total;
+    },
+    reload: function () {
+      window.location.reload()
     },
   },
   components: {
