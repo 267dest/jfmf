@@ -9,15 +9,15 @@
     
     <select v-model="selected">
   <option disabled value="">Please select order type</option>
-  <option>Order_by_date</option>
-  <option>Order_by_quantity</option>
-  <option>Order_by_margin</option>
+  <option>Sale_log</option>
+  <option>Stock_log</option>
 </select>
 <span>Selected: {{ selected }}</span>
 <button @click="getData()">Submit</button>
   </div>
   <div v-if="showBoo">
-  <log-table :ODrinit="selected" :DOinit="D_order" :SOinit="S_order" :Dainit="timeR"></log-table>
+  <log-table v-if="selected == 'Sale_log'" :ODrinit="selected" :DOinit="S_detail" :SOinit="S_order" :Dainit="timeR"></log-table>
+  <log-table v-if="selected == 'Stock_log'" :ODrinit="selected" :DOinit="D_detail" :SOinit="D_order" :Dainit="timeR"></log-table>
   <button @click="hide()">Close</button>
   </div>
   </div>
@@ -35,6 +35,7 @@ import {router} from "../routes"
 import { db } from "../firebase";
 import LogTable from '../components/logTable.vue';
 import moment from 'moment';
+import firebase from 'firebase'
 export default {
   data() {
     return {
@@ -43,8 +44,11 @@ export default {
         timeR: null,
         selected: "",
         S_order: [],
+        S_detail: [],
         D_order: [],
+        D_detail:[],
         tempOrd: [],
+        tmpList : [],
     }
   },
   methods: {
@@ -62,32 +66,42 @@ export default {
     this.showBoo = false
     db.collection('orders').get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
-        this.tempOrd.push(doc.data())
-        console.log(doc.data())
-        this.tempOrd[0].date = this.tempOrd[0].date.toDate()
-        db.collection('orders').doc(doc.data().o_id).collection('detail').get().then(querySnapshot2 => {
-          var tmpList = []
-          // tmpList.push(doc.data().o_id)
-          querySnapshot2.forEach(doc2 => {
-            tmpList.push(doc2.data())
-            // console.log(doc2.data())
+        this.S_order.push({
+          o_id: doc.data().o_id,
+          o_total: doc.data().o_total,
+          date: doc.data().date.toDate(),
           })
-          this.tempOrd.push(tmpList)
-          // console.log(tmpList)
-        })
-        // console.log(this.tempOrd)
-        this.S_order.push(this.tempOrd)
-        this.tempOrd = []
+          console.log(this.S_order)
+      })})
+      db.collection('orders_detail').get().then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        console.log(doc.get('o_id'))
+        this.S_detail.push({
+          o_id: doc.get('o_id'),
+          p_id: doc.get('p_id'),
+          o_price: doc.get('o_price'),
+          o_amount: doc.get('o_amount'),
+          })
       })
-      // console.log(this.S_order)
     })
     db.collection('delivery_orders').get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
-        this.tempOrd.push(doc.data())
-        this.tempOrd.push(doc.ref.collection('detail'))
-        this.tempOrd[0].do_date = this.tempOrd[0].do_date.toDate()
-        this.D_order.push(this.tempOrd)
-        this.tempOrd = []
+        this.D_order.push({
+          o_id: doc.data().do_id,
+          o_total: 0,
+          date: doc.data().do_date.toDate(),
+          })
+          console.log(this.D_order)
+      })})
+      db.collection('delivery_detail').get().then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        console.log(doc.get('do_id'))
+        this.D_detail.push({
+          o_id: doc.get('do_id'),
+          p_id: doc.get('p_id'),
+          o_amount: doc.get('d_amount'),
+          o_price: 0,
+          })
       })
     })
   },
