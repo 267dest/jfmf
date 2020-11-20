@@ -60,7 +60,7 @@
     </modal>
 
     <modal name="confirmM-popup" transition="pop-out" :width="400" :focus-trap="true" :height="205">
-      <div class="modal-header" style="background-color: #5D3916;">
+      <div class="modal-header" style="background-color: #353A40;">
         <h5 class="modal-title" style="color: white">Confirm Deletion</h5>
       </div>
       <div class="modal-body">
