@@ -59,6 +59,7 @@
             contain
             v-b-modal.modal-confirm-add-stock
             v-if="stockModeOn"
+            @click="calcTotalPriceAdd"
           >
             Confirm Add Stock
           </b-button>
@@ -67,24 +68,37 @@
             title="CONFIRM ADD STOCK"
             @ok="onAddProQtySubmit(stockCart)"
           >
-            <b-row cols="2" align="center">
+            <b-row cols="3" align="center">
               <b-col>
                 <span>Product ID</span>
               </b-col>
               <b-col>
                 <span>Amount</span>
               </b-col>
+              <b-col>
+                <span>Price</span>
+              </b-col>
             </b-row>
             <div v-for="(item, key) in stockCart" :key="key">
-              <b-row cols="2" align="center">
+              <b-row cols="3" align="center">
                 <b-col>
                   <span>{{ item.id }}</span>
                 </b-col>
                 <b-col>
                   <span>{{ item.qty }}</span>
                 </b-col>
+                <b-col>
+                  <span>{{ item.price }}</span>
+                </b-col>
               </b-row>
             </div>
+            <b-row cols="3">
+              <b-col></b-col>
+              <b-col>
+                <span>Total Price: {{ totalPriceAdd }}</span>
+              </b-col>
+              <b-col></b-col>
+            </b-row>
           </b-modal>
         </b-col>
         <b-col align="center">
@@ -281,6 +295,7 @@ export default {
       addProductQty: {
         id: "",
         qty: 1,
+        price: 0,
       },
       deleteProId: "",
       sellProduct: {
@@ -291,6 +306,7 @@ export default {
       shoppingCart: [],
       stockCart: [],
       totalPrice: 0,
+      totalPriceAdd: 0,
     };
   },
   firestore() {
@@ -411,7 +427,8 @@ export default {
             p_id: item.id,
             o_amount: item.qty,
             o_price: item.price,
-            o_id: infoDate
+            o_id: infoDate,
+            od_id: infoDate+item.id
           });
         currentProducts.forEach(function (eachPro) {
           if (eachPro.p_id == item.id) {
@@ -437,15 +454,18 @@ export default {
     addQty: function (product) {
       this.addProductQty.id = product.p_id;
       this.addProductQty.qty = 1;
+      this.addProductQty.price = 0;
     },
     onCancelAddProQty: function () {
       this.addProductQty.id = "";
       this.addProductQty.qty = 1;
+      this.addProductQty.price = 0;
     },
     onAddToCart: function () {
       this.stockCart.push({
         id: this.addProductQty.id,
         qty: this.addProductQty.qty,
+        price: this.addProductQty.price
       });
       this.onCancelAddProQty();
     },
@@ -479,8 +499,7 @@ export default {
       db.collection("delivery_orders").doc(infoDate).set({
         do_id: infoDate,
         do_date: today,
-
-        // do_total:
+        do_total: this.totalPriceAdd,
       });
       var currentProducts = this.products;
       var currentQty = 0;
@@ -488,9 +507,11 @@ export default {
         db.collection("delivery_detail")
           .doc(infoDate+item.id)
           .set({
+            dd_id: infoDate+item.id,
             do_id: infoDate,
             p_id: item.id,
-            d_amount: item.qty
+            d_amount: item.qty,
+            d_price: item.price,
           });
         currentProducts.forEach(function (eachPro) {
           if (eachPro.p_id == item.id) {
@@ -578,6 +599,13 @@ export default {
         total += item.price;
       });
       this.totalPrice = total;
+    },
+    calcTotalPriceAdd: function () {
+      var total = 0;
+      this.stockCart.forEach(function (item) {
+        total += item.price;
+      })
+      this.totalPriceAdd = total;
     },
     reload: function () {
       window.location.reload()

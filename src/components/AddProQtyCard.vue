@@ -7,6 +7,14 @@
       class="validate"
       :placeholder="addProductQty.qty"
     />
+    <br />
+    Input price
+    <br />
+    <input
+      v-model.number="addProductQty.price"
+      class="validate"
+      :placeholder="addProductQty.price"
+    />
     <div>
       <b-button @click="onCancelAddProQty">Cancel</b-button>
       <b-button @click="onAddToCart()">Confirm</b-button>
