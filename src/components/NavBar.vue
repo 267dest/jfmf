@@ -27,7 +27,7 @@
               </li>
           </ul>
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item active"> <a class="nav-link">{{ user.email }}</a></li>
+            <li class="nav-item active"> <a class="nav-link">{{ displayN }}</a></li>
           <li class="nav-item active">
             <a class="nav-link" href="#" @click="LogOut()">Log Out</a>
           </li>
@@ -59,14 +59,31 @@
 <script>
 import {mapState, mapActions} from 'vuex'
 import {router} from '../routes'
+import firebase from "firebase"
+import { db } from "../firebase";
 export default {
-  name: "NavBar",
+  
+    
+      data(){
+        return{
+        name: "NavBar",
+        displayN: "",
+        }
+      },
     computed: {
     ...mapState({
       alert: state => state.alert
     }),
     ...mapState('account', ['user']),
     
+  },
+  created(){
+    db.collection('staffs').get().then(querySnapshot => {
+                  querySnapshot.forEach(doc => {
+                    if( doc.get('email') == this.user.email){
+                          
+                              this.displayN = doc.get('username')
+    }})})
   },
   methods: {
         ...mapActions('account',['logout']),

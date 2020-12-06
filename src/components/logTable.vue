@@ -6,7 +6,7 @@
           <tr>
             <th>ID</th>
             <th>Date Time</th>
-            <th v-if="oderin != 'Stock_log'">Price</th>
+            <th>Price</th>
             <th>Detail</th>
           </tr>
         </thead>
@@ -17,7 +17,7 @@
           >
             <td>{{ ord.o_id }}</td>
             <td>{{ ord.date }}</td>
-            <td v-if="oderin != 'Stock_log'">{{ ord.o_total }}</td>
+            <td>{{ ord.o_total }}</td>
             <td style="width: 10%; text-align: center">
               <button class="btn btn-light" @click="show(ord.o_id)">
                 Detail
@@ -53,7 +53,7 @@
                   <b style="font-weight: bold; padding-left: 3em"> Amount: </b
                   >{{ det.o_amount }}
                 </p>
-                <p v-if="oderin != 'Stock_log'">
+                <p>
                   <b style="font-weight: bold; padding-left: 3em"> Price: </b
                   >{{ det.o_price }}
                 </p>

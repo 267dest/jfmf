@@ -75,6 +75,7 @@ export default {
   },
   methods: {
     getData() {
+      console.log(this.selected)
       this.showBoo = true;
     },
     hide() {
@@ -117,7 +118,7 @@ export default {
         querySnapshot.forEach((doc) => {
           this.D_order.push({
             o_id: doc.data().do_id,
-            o_total: 0,
+            o_total: doc.data().do_total,
             date: doc.data().do_date.toDate(),
           });
           console.log(this.D_order);
@@ -132,7 +133,7 @@ export default {
             o_id: doc.get("do_id"),
             p_id: doc.get("p_id"),
             o_amount: doc.get("d_amount"),
-            o_price: 0,
+            o_price: doc.get("d_price"),
           });
         });
       });
