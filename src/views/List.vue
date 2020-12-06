@@ -391,11 +391,15 @@ export default {
       this.shoppingCart = [];
     },
     onAddSell: function () {
-      this.shoppingCart.push({
-        id: this.sellProduct.id,
-        qty: this.sellProduct.qty,
-        price: this.sellProduct.qty * this.sellProduct.price,
-      });
+      if(this.sellProduct.qty > 0) {
+        this.shoppingCart.push({
+          id: this.sellProduct.id,
+          qty: this.sellProduct.qty,
+          price: this.sellProduct.qty * this.sellProduct.price,
+        });
+      } else {
+        alert("กรุณากรอกจำนวนสินค้าให้ถูกต้อง");
+      }
       this.onCancelSell();
     },
     onSellSubmit: function (shoppingCart) {
@@ -456,6 +460,7 @@ export default {
             });
           });
       });
+      alert("บันทึกการขายเรียบร้อย");
       this.reload();
       this.onResetCart();
     },
@@ -471,11 +476,15 @@ export default {
       this.addProductQty.price = 0;
     },
     onAddToCart: function () {
-      this.stockCart.push({
-        id: this.addProductQty.id,
-        qty: this.addProductQty.qty,
-        price: this.addProductQty.qty*this.addProductQty.price
-      });
+      if(this.addProductQty.qty > 0) {
+        this.stockCart.push({
+          id: this.addProductQty.id,
+          qty: this.addProductQty.qty,
+          price: this.addProductQty.qty*this.addProductQty.price
+        });
+      } else {
+        alert("กรุณากรอกจำนวนสินค้าให้ถูกต้อง");
+      }
       this.onCancelAddProQty();
     },
     onResetStockCart: function () {
@@ -539,6 +548,7 @@ export default {
             });
           });
       });
+      alert("บันทึกการซื้อเรียบร้อย");
       this.reload();
       this.onResetStockCart();
     },
