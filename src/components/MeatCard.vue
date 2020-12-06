@@ -18,6 +18,9 @@
     <div id="font-price">
       <span>Price: {{ p_price }}</span>
     </div>
+    <div id="font-price" v-if="stockMode === true">
+      <span>In Price: {{ p_inprice }}</span>
+    </div>
   </div>
 </template>
 
@@ -43,6 +46,14 @@ export default {
     product_price: {
       type: Number,
       default: 0
+    },
+    product_inprice: {
+      type: Number,
+      default: 0
+    },
+    stockModeOn: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -52,7 +63,9 @@ export default {
       p_name: this.product_name,
       p_desc: this.product_desc,
       p_qty: this.product_qty,
-      p_price: this.product_price
+      p_price: this.product_price,
+      p_inprice: this.product_inprice,
+      stockMode: this.stockModeOn,
     };
   },
 };

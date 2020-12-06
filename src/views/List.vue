@@ -191,7 +191,10 @@
                 :product_desc="product.p_description"
                 :product_qty="product.p_qty"
                 :product_price="product.p_price"
+                :product_inprice="product.p_inprice"
+                :stockModeOn="stockModeOn"
               />
+              <br />
               <div v-if="addProductQty.id === product.p_id">
                 <AddProQtyCard
                   v-bind:addProductQty="addProductQty"
@@ -225,6 +228,8 @@
               :product_desc="product.p_description"
               :product_qty="product.p_qty"
               :product_price="product.p_price"
+              :product_inprice="product.p_inprice"
+              :stockModeOn="stockModeOn"
             />
             <div v-if="sellProduct.id === product.p_id">
               <SellFormCard
@@ -283,6 +288,7 @@ export default {
         description: "",
         qty: 0,
         price: 0,
+        inprice: 0,
       },
       editId: "",
       editProduct: {
@@ -291,6 +297,7 @@ export default {
         description: "",
         qty: 0,
         price: 0,
+        inprice: 0,
       },
       addProductQty: {
         id: "",
@@ -360,6 +367,7 @@ export default {
           p_description: this.addProduct.description,
           p_qty: this.addProduct.qty,
           p_price: this.addProduct.price,
+          p_inprice: this.addProduct.inprice,
         })
         .then(this.getProducts);
       this.addProduct.id = "";
@@ -367,6 +375,7 @@ export default {
       this.addProduct.description = "";
       this.addProduct.qty = 1;
       this.addProduct.price = 0;
+      this.addProduct.inprice = 0;
     },
     // Sell product
     sell: function (product) {
@@ -454,7 +463,7 @@ export default {
     addQty: function (product) {
       this.addProductQty.id = product.p_id;
       this.addProductQty.qty = 1;
-      this.addProductQty.price = 0;
+      this.addProductQty.price = product.p_inprice;
     },
     onCancelAddProQty: function () {
       this.addProductQty.id = "";
@@ -465,7 +474,7 @@ export default {
       this.stockCart.push({
         id: this.addProductQty.id,
         qty: this.addProductQty.qty,
-        price: this.addProductQty.price
+        price: this.addProductQty.qty*this.addProductQty.price
       });
       this.onCancelAddProQty();
     },
@@ -558,6 +567,7 @@ export default {
       this.editProduct.description = product.p_description;
       this.editProduct.qty = product.p_qty;
       this.editProduct.price = product.p_price;
+      this.editProduct.inprice = product.p_inprice;
     },
     onCancel: function () {
       this.editId = "";
@@ -566,6 +576,7 @@ export default {
       this.editProduct.description = "";
       this.editProduct.qty = 1;
       this.editProduct.price = 0;
+      this.editProduct.inprice = 0;
     },
     onEditSubmit: function () {
       db.collection("products")
@@ -580,6 +591,7 @@ export default {
                 p_description: this.editProduct.description,
                 p_qty: this.editProduct.qty,
                 p_price: this.editProduct.price,
+                p_inprice: this.editProduct.inprice,
               })
               .then(this.getProducts);
           });
