@@ -23,6 +23,11 @@
             <br />
             <input type="text" v-model.number="addProduct.price" class="validate" placeholder="Price">
           </div>
+          <div>
+            In Price
+            <br />
+            <input type="text" v-model.number="addProduct.inprice" class="validate" placeholder="Inprice">
+          </div>
           </div>
          
         </b-modal>

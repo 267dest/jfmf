@@ -37,6 +37,14 @@
       :placeholder="editProduct.price"
     />
     <br />
+    In Price
+    <br />
+    <input
+      v-model.number="editProduct.inprice"
+      class="validate"
+      :placeholder="editProduct.inprice"
+    />
+    <br />
     <br />
     <div>
       <b-button variant="outline-secondary" @click="onCancel">Cancel</b-button>
