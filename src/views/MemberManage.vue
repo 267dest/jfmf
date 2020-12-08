@@ -99,7 +99,9 @@
             <label for="name"><b>Name</b></label>
             <input name="name" id="name" type="text" placeholder="Staff name *" v-model="newstaff.name">
             <label for="birth_date"><b>Birth date</b></label>
-            <input name="birth_date" id="birth_date" type="text" placeholder="Birth date *" v-model="newstaff.birth_date">
+            <br>
+            <input type="date" id="birth_date" name="birth_date"
+       value="datetime-local" max="datetime-local" v-model="newstaff.birth_date"><br>
             <label for="phone_num"><b>Phone number</b></label>
             <input name="phone_num" id="phone_num" type="text" placeholder="Phone number *" v-model="newstaff.phone_num">
             
@@ -264,7 +266,33 @@ export default {
       ...mapActions('account',['outto']),
       ...mapActions('account', ['login']),
       handleSubmit(){
+        var numbers = /^[0-9]+$/;
+        var check = true;
         if( this.form.email && this.form.password && this.form.username && this.newstaff.name && this.newstaff.phone_num && this.newstaff.birth_date){
+          this.staffs.forEach(staff => {
+            if(staff.email == this.form.email && !staff.deleted){
+              this.error("This email has been used")
+              check = false
+            }
+            else if (staff.username == this.form.username && !staff.deleted){
+              this.error("This username has been used")
+              check = false
+            }
+          });}        
+          else{
+          this.error("All fields are required");
+        }
+          if(check){
+            if(this.form.email.length < 3 || !this.form.email.includes('@')){
+              this.error("Email is badly format")
+            }
+            else if (this.form.password.length < 6){
+              this.error("Password is badly format")
+            }
+            else if (this.newstaff.phone_num.length != 10 || !this.newstaff.phone_num.match(numbers)){
+              this.error("Phone number is badly format")
+            }
+            else{
           db.collection('staffs').doc(this.form.username).set({
             "email": this.form.email,
             "password": this.form.password,
@@ -274,16 +302,14 @@ export default {
             "birth_date": this.newstaff.birth_date,
             "status": false,
             "deleted": false
-          }).then(this.register(this.form))
-        }
-        else{
-          this.error("All fields are required");
-        }
-        this.form = {email: '',
+          }).then(this.register(this.form).then(this.form = {email: '',
                   password: '',
                   username: '',}.then(
             this.newstaff = []
-          ).then(this.reload())
+          ).then(this.reload())))
+          }}
+
+        
       }
   },
   components: {

@@ -36,10 +36,6 @@ export default {
     mapState,
     mapActions,
   },
-created(){
-  if(this.user){
-  router.push("/list")}
-},
   computed: {
     ...mapState({
       alert: state => state.alert
