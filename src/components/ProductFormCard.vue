@@ -48,14 +48,14 @@
     <br />
     <div>
       <b-button variant="outline-secondary" @click="onCancel">Cancel</b-button>
-      <b-button variant="primary" @click="onEditSubmit">Confirm</b-button>
+      <b-button variant="primary" @click="onEditSubmit(product)">Confirm</b-button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['editProduct', 'onCancel', 'onEditSubmit'],
+  props: ['editProduct', 'onCancel', 'onEditSubmit', 'product'],
   
 };
 </script>

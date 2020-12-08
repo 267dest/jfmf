@@ -106,7 +106,10 @@
         </b-col>
         <b-col align="end">
         
-          <AddFormCard v-bind:addProduct="addProduct" v-bind:addPro="addPro" />
+          <AddFormCard 
+            v-bind:addProduct="addProduct" 
+            v-bind:addPro="addPro" 
+          />
           <b-button
             variant="outline-primary"
             class="switch-mode-btn"
@@ -181,6 +184,7 @@
                 v-bind:editProduct="editProduct"
                 v-bind:onCancel="onCancel"
                 v-bind:onEditSubmit="onEditSubmit"
+                v-bind:product="product"
               />
             </div>
 
@@ -236,6 +240,7 @@
                 v-bind:sellProduct="sellProduct"
                 v-bind:onCancelSell="onCancelSell"
                 v-bind:onAddSell="onAddSell"
+                v-bind:product="product"
               />
             </div>
             <div id="add-card-footer" v-else>
@@ -359,23 +364,46 @@ export default {
     },
     // Add new product to database
     addPro: function () {
-      db.collection("products")
-        .doc(this.addProduct.id)
-        .set({
-          p_id: this.addProduct.id,
-          p_name: this.addProduct.name,
-          p_description: this.addProduct.description,
-          p_qty: this.addProduct.qty,
-          p_price: this.addProduct.price,
-          p_inprice: this.addProduct.inprice,
-        })
-        .then(this.getProducts);
-      this.addProduct.id = "";
-      this.addProduct.name = "";
-      this.addProduct.description = "";
-      this.addProduct.qty = 1;
-      this.addProduct.price = 0;
-      this.addProduct.inprice = 0;
+      var sameId = false;
+      var sameName = false;
+      var addProTmp = this.addProduct;
+      this.products.forEach(function (item) {
+        if(item.p_id == addProTmp.id) {
+          sameId = true;
+        }
+        if(item.p_name == addProTmp.name) {
+          sameName = true;
+        }
+      })
+      if(sameId) {
+        alert("พบรหัสสินค้าในระบบ");
+      } else if(sameName) {
+        alert("พบชื่อสินค้าในระบบ");
+      } else if(this.addProduct.price < 0 || this.addProduct.price > 10000 || 
+      ((this.addProduct.price%1 != 0.25 && this.addProduct.price%1 != 0.5) && this.addProduct.price%1 > 0)) {
+        alert("กรุณากรอกราคาขายของสินค้าให้ถูกต้อง");
+      } else if(this.addProduct.inprice < 0 || this.addProduct.inprice > 10000 ||
+      ((this.addProduct.inprice%1 != 0.25 && this.addProduct.inprice%1 != 0.5) && this.addProduct.inprice%1 > 0)) {
+        alert("กรุณากรอกราคาซื้อของสินค้าให้ถูกต้อง");
+      } else {
+        db.collection("products")
+          .doc(this.addProduct.id)
+          .set({
+            p_id: this.addProduct.id,
+            p_name: this.addProduct.name,
+            p_description: this.addProduct.description,
+            p_qty: this.addProduct.qty,
+            p_price: this.addProduct.price,
+            p_inprice: this.addProduct.inprice,
+          })
+          .then(this.getProducts);
+        this.addProduct.id = "";
+        this.addProduct.name = "";
+        this.addProduct.description = "";
+        this.addProduct.qty = 1;
+        this.addProduct.price = 0;
+        this.addProduct.inprice = 0;
+      }
     },
     // Sell product
     sell: function (product) {
@@ -390,8 +418,9 @@ export default {
     onResetCart: function () {
       this.shoppingCart = [];
     },
-    onAddSell: function () {
-      if(this.sellProduct.qty > 0) {
+    onAddSell: function (product) {
+      if(this.sellProduct.qty > 0 && this.sellProduct.qty < 1000 && 
+      this.sellProduct.qty <= product.p_qty && this.sellProduct.qty%1 == 0) {
         this.shoppingCart.push({
           id: this.sellProduct.id,
           qty: this.sellProduct.qty,
@@ -476,7 +505,8 @@ export default {
       this.addProductQty.price = 0;
     },
     onAddToCart: function () {
-      if(this.addProductQty.qty > 0) {
+      if(this.addProductQty.qty > 0 && this.addProductQty.qty < 1000 && 
+      this.addProductQty.qty%1 == 0) {
         this.stockCart.push({
           id: this.addProductQty.id,
           qty: this.addProductQty.qty,
@@ -588,26 +618,45 @@ export default {
       this.editProduct.price = 0;
       this.editProduct.inprice = 0;
     },
-    onEditSubmit: function () {
-      db.collection("products")
-        .where("p_id", "==", this.editId)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            doc.ref
-              .set({
-                p_id: this.editId,
-                p_name: this.editProduct.name,
-                p_description: this.editProduct.description,
-                p_qty: this.editProduct.qty,
-                p_price: this.editProduct.price,
-                p_inprice: this.editProduct.inprice,
-              })
-              .then(this.getProducts);
-          });
-          this.onCancel();
-        })
-        .then(this.reload)
+    onEditSubmit: function (product) {
+      var sameName = false;
+      var editProTmp = this.editProduct;
+      this.products.forEach(function (item) {
+        if(item.p_name == editProTmp.name && item.p_id != editProTmp.id) {
+          sameName = true;
+        }
+      })
+      if(sameName == true) {
+        alert("พบชื่อสินค้าในระบบ");
+      } else if(this.editProduct.qty < 0 || this.editProduct.qty > 1000 || this.editProduct.qty%1 != 0) {
+        alert("กรุณากรอกจำนวนสินค้าให้ถูกต้อง");
+      } else if(this.editProduct.price < 0 || this.editProduct.price > 10000 ||
+      (this.editProduct.price%1 > 0 && (this.editProduct.price%1 != 0.25 && this.editProduct.price%1 != 0.5))) {
+        alert("กรุณากรอกราคาขายของสินค้าให้ถูกต้อง");
+      } else if(this.editProduct.inprice < 0 || this.editProduct.inprice > 10000 ||
+      (this.editProduct.inprice%1 > 0 && (this.editProduct.inprice%1 != 0.25 && this.editProduct.inprice%1 != 0.5))) {
+        alert("กรุณากรอกราคาซื้อของสินค้าให้ถูกต้อง");
+      } else {
+        db.collection("products")
+          .where("p_id", "==", this.editId)
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              doc.ref
+                .set({
+                  p_id: this.editId,
+                  p_name: this.editProduct.name,
+                  p_description: this.editProduct.description,
+                  p_qty: this.editProduct.qty,
+                  p_price: this.editProduct.price,
+                  p_inprice: this.editProduct.inprice,
+                })
+                .then(this.getProducts);
+            });
+            this.onCancel();
+          })
+          .then(this.reload)
+      }
     },
     removeProduct: function (key) {
       this.shoppingCart.splice(key, 1);
