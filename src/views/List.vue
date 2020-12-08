@@ -319,6 +319,7 @@ export default {
       stockCart: [],
       totalPrice: 0,
       totalPriceAdd: 0,
+      displayN: "",
     };
   },
   firestore() {
@@ -335,6 +336,13 @@ export default {
     if (!this.user) {
       router.push("/");
     }
+    db.collection('staffs').get().then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        if(doc.get('email') == this.user.email){
+          this.displayN = doc.get('username');
+          // console.log(doc.get('username'));
+        }
+    })})
     this.getProducts();
   },
   computed: {
@@ -459,6 +467,7 @@ export default {
         o_id: infoDate,
         date: today,
         o_total: this.totalPrice,
+        username: this.displayN,
       });
       var currentProducts = this.products;
       var currentQty = 0;
@@ -548,6 +557,7 @@ export default {
         do_id: infoDate,
         do_date: today,
         do_total: this.totalPriceAdd,
+        username: this.displayN,
       });
       var currentProducts = this.products;
       var currentQty = 0;
